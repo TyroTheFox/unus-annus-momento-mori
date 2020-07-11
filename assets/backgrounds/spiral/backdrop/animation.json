@@ -1,0 +1,13 @@
+{
+    "animData": {
+        "frameRate": 30,
+        "repeat": -1
+    },
+    "frameConfig": {
+        "prefix": "backdrop/frame_",
+        "suffix": ".png",
+        "zeroPad": 2,
+        "start": 0,
+        "end": 19
+    }
+}

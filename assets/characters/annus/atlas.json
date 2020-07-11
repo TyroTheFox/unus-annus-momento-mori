@@ -1,0 +1,755 @@
+{
+	"textures": [
+		{
+			"image": "annus.png",
+			"format": "RGBA8888",
+			"size": {
+				"w": 258,
+				"h": 1023
+			},
+			"scale": 1,
+			"frames": [
+				{
+					"filename": "Damage/damage_00.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 102,
+						"h": 150
+					},
+					"spriteSourceSize": {
+						"x": 19,
+						"y": 2,
+						"w": 65,
+						"h": 148
+					},
+					"frame": {
+						"x": 1,
+						"y": 1,
+						"w": 65,
+						"h": 148
+					}
+				},
+				{
+					"filename": "Victory/victory_08.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 102,
+						"h": 150
+					},
+					"spriteSourceSize": {
+						"x": 14,
+						"y": 3,
+						"w": 65,
+						"h": 147
+					},
+					"frame": {
+						"x": 1,
+						"y": 151,
+						"w": 65,
+						"h": 147
+					}
+				},
+				{
+					"filename": "Victory/victory_09.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 102,
+						"h": 150
+					},
+					"spriteSourceSize": {
+						"x": 15,
+						"y": 3,
+						"w": 64,
+						"h": 147
+					},
+					"frame": {
+						"x": 1,
+						"y": 300,
+						"w": 64,
+						"h": 147
+					}
+				},
+				{
+					"filename": "Victory/victory_01.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 102,
+						"h": 150
+					},
+					"spriteSourceSize": {
+						"x": 16,
+						"y": 3,
+						"w": 63,
+						"h": 147
+					},
+					"frame": {
+						"x": 1,
+						"y": 449,
+						"w": 63,
+						"h": 147
+					}
+				},
+				{
+					"filename": "Victory/victory_02.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 102,
+						"h": 150
+					},
+					"spriteSourceSize": {
+						"x": 16,
+						"y": 3,
+						"w": 63,
+						"h": 147
+					},
+					"frame": {
+						"x": 1,
+						"y": 598,
+						"w": 63,
+						"h": 147
+					}
+				},
+				{
+					"filename": "Victory/victory_03.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 102,
+						"h": 150
+					},
+					"spriteSourceSize": {
+						"x": 16,
+						"y": 3,
+						"w": 63,
+						"h": 147
+					},
+					"frame": {
+						"x": 1,
+						"y": 747,
+						"w": 63,
+						"h": 147
+					}
+				},
+				{
+					"filename": "Defeat/defeat_02.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 102,
+						"h": 150
+					},
+					"spriteSourceSize": {
+						"x": 26,
+						"y": 3,
+						"w": 53,
+						"h": 115
+					},
+					"frame": {
+						"x": 1,
+						"y": 896,
+						"w": 53,
+						"h": 115
+					}
+				},
+				{
+					"filename": "Defeat/defeat_10.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 102,
+						"h": 150
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 3,
+						"h": 3
+					},
+					"frame": {
+						"x": 1,
+						"y": 1013,
+						"w": 3,
+						"h": 3
+					}
+				},
+				{
+					"filename": "Defeat/defeat_03.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 102,
+						"h": 150
+					},
+					"spriteSourceSize": {
+						"x": 26,
+						"y": 3,
+						"w": 53,
+						"h": 93
+					},
+					"frame": {
+						"x": 56,
+						"y": 896,
+						"w": 53,
+						"h": 93
+					}
+				},
+				{
+					"filename": "Defeat/defeat_07.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 102,
+						"h": 150
+					},
+					"spriteSourceSize": {
+						"x": 33,
+						"y": 3,
+						"w": 31,
+						"h": 31
+					},
+					"frame": {
+						"x": 56,
+						"y": 991,
+						"w": 31,
+						"h": 31
+					}
+				},
+				{
+					"filename": "Defeat/defeat_08.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 102,
+						"h": 150
+					},
+					"spriteSourceSize": {
+						"x": 33,
+						"y": 3,
+						"w": 31,
+						"h": 22
+					},
+					"frame": {
+						"x": 89,
+						"y": 991,
+						"w": 31,
+						"h": 22
+					}
+				},
+				{
+					"filename": "Victory/victory_04.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 102,
+						"h": 150
+					},
+					"spriteSourceSize": {
+						"x": 16,
+						"y": 3,
+						"w": 63,
+						"h": 147
+					},
+					"frame": {
+						"x": 66,
+						"y": 449,
+						"w": 63,
+						"h": 147
+					}
+				},
+				{
+					"filename": "Victory/victory_05.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 102,
+						"h": 150
+					},
+					"spriteSourceSize": {
+						"x": 16,
+						"y": 3,
+						"w": 63,
+						"h": 147
+					},
+					"frame": {
+						"x": 67,
+						"y": 300,
+						"w": 63,
+						"h": 147
+					}
+				},
+				{
+					"filename": "Victory/victory_06.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 102,
+						"h": 150
+					},
+					"spriteSourceSize": {
+						"x": 16,
+						"y": 3,
+						"w": 63,
+						"h": 147
+					},
+					"frame": {
+						"x": 68,
+						"y": 1,
+						"w": 63,
+						"h": 147
+					}
+				},
+				{
+					"filename": "Victory/victory_07.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 102,
+						"h": 150
+					},
+					"spriteSourceSize": {
+						"x": 16,
+						"y": 3,
+						"w": 63,
+						"h": 147
+					},
+					"frame": {
+						"x": 68,
+						"y": 150,
+						"w": 63,
+						"h": 147
+					}
+				},
+				{
+					"filename": "Victory/victory_10.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 102,
+						"h": 150
+					},
+					"spriteSourceSize": {
+						"x": 16,
+						"y": 3,
+						"w": 63,
+						"h": 147
+					},
+					"frame": {
+						"x": 66,
+						"y": 598,
+						"w": 63,
+						"h": 147
+					}
+				},
+				{
+					"filename": "Victory/victory_11.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 102,
+						"h": 150
+					},
+					"spriteSourceSize": {
+						"x": 16,
+						"y": 3,
+						"w": 63,
+						"h": 147
+					},
+					"frame": {
+						"x": 66,
+						"y": 747,
+						"w": 63,
+						"h": 147
+					}
+				},
+				{
+					"filename": "Defeat/defeat_04.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 102,
+						"h": 150
+					},
+					"spriteSourceSize": {
+						"x": 31,
+						"y": 3,
+						"w": 48,
+						"h": 77
+					},
+					"frame": {
+						"x": 111,
+						"y": 896,
+						"w": 48,
+						"h": 77
+					}
+				},
+				{
+					"filename": "Defeat/defeat_09.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 102,
+						"h": 150
+					},
+					"spriteSourceSize": {
+						"x": 34,
+						"y": 3,
+						"w": 27,
+						"h": 11
+					},
+					"frame": {
+						"x": 111,
+						"y": 975,
+						"w": 27,
+						"h": 11
+					}
+				},
+				{
+					"filename": "Defeat/defeat_06.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 102,
+						"h": 150
+					},
+					"spriteSourceSize": {
+						"x": 33,
+						"y": 3,
+						"w": 42,
+						"h": 47
+					},
+					"frame": {
+						"x": 140,
+						"y": 975,
+						"w": 42,
+						"h": 47
+					}
+				},
+				{
+					"filename": "Victory/victory_12.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 102,
+						"h": 150
+					},
+					"spriteSourceSize": {
+						"x": 16,
+						"y": 3,
+						"w": 63,
+						"h": 147
+					},
+					"frame": {
+						"x": 131,
+						"y": 449,
+						"w": 63,
+						"h": 147
+					}
+				},
+				{
+					"filename": "Victory/victory_13.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 102,
+						"h": 150
+					},
+					"spriteSourceSize": {
+						"x": 16,
+						"y": 3,
+						"w": 63,
+						"h": 147
+					},
+					"frame": {
+						"x": 132,
+						"y": 299,
+						"w": 63,
+						"h": 147
+					}
+				},
+				{
+					"filename": "Victory/victory_14.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 102,
+						"h": 150
+					},
+					"spriteSourceSize": {
+						"x": 16,
+						"y": 3,
+						"w": 63,
+						"h": 147
+					},
+					"frame": {
+						"x": 132,
+						"y": 299,
+						"w": 63,
+						"h": 147
+					}
+				},
+				{
+					"filename": "Attack/attack_00.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 102,
+						"h": 150
+					},
+					"spriteSourceSize": {
+						"x": 19,
+						"y": 3,
+						"w": 60,
+						"h": 147
+					},
+					"frame": {
+						"x": 133,
+						"y": 1,
+						"w": 60,
+						"h": 147
+					}
+				},
+				{
+					"filename": "Attack/attack_01.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 102,
+						"h": 150
+					},
+					"spriteSourceSize": {
+						"x": 19,
+						"y": 3,
+						"w": 60,
+						"h": 147
+					},
+					"frame": {
+						"x": 133,
+						"y": 150,
+						"w": 60,
+						"h": 147
+					}
+				},
+				{
+					"filename": "Attack/attack_02.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 102,
+						"h": 150
+					},
+					"spriteSourceSize": {
+						"x": 19,
+						"y": 3,
+						"w": 60,
+						"h": 147
+					},
+					"frame": {
+						"x": 195,
+						"y": 1,
+						"w": 60,
+						"h": 147
+					}
+				},
+				{
+					"filename": "Attack/attack_03.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 102,
+						"h": 150
+					},
+					"spriteSourceSize": {
+						"x": 19,
+						"y": 3,
+						"w": 60,
+						"h": 147
+					},
+					"frame": {
+						"x": 195,
+						"y": 150,
+						"w": 60,
+						"h": 147
+					}
+				},
+				{
+					"filename": "Attack/attack_04.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 102,
+						"h": 150
+					},
+					"spriteSourceSize": {
+						"x": 19,
+						"y": 3,
+						"w": 60,
+						"h": 147
+					},
+					"frame": {
+						"x": 131,
+						"y": 598,
+						"w": 60,
+						"h": 147
+					}
+				},
+				{
+					"filename": "Attack/attack_05.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 102,
+						"h": 150
+					},
+					"spriteSourceSize": {
+						"x": 19,
+						"y": 3,
+						"w": 60,
+						"h": 147
+					},
+					"frame": {
+						"x": 131,
+						"y": 747,
+						"w": 60,
+						"h": 147
+					}
+				},
+				{
+					"filename": "Defeat/defeat_05.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 102,
+						"h": 150
+					},
+					"spriteSourceSize": {
+						"x": 33,
+						"y": 3,
+						"w": 46,
+						"h": 61
+					},
+					"frame": {
+						"x": 161,
+						"y": 896,
+						"w": 46,
+						"h": 61
+					}
+				},
+				{
+					"filename": "Attack/attack_06.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 102,
+						"h": 150
+					},
+					"spriteSourceSize": {
+						"x": 19,
+						"y": 3,
+						"w": 60,
+						"h": 147
+					},
+					"frame": {
+						"x": 193,
+						"y": 598,
+						"w": 60,
+						"h": 147
+					}
+				},
+				{
+					"filename": "Idle/idle_00.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 102,
+						"h": 150
+					},
+					"spriteSourceSize": {
+						"x": 19,
+						"y": 3,
+						"w": 60,
+						"h": 147
+					},
+					"frame": {
+						"x": 193,
+						"y": 598,
+						"w": 60,
+						"h": 147
+					}
+				},
+				{
+					"filename": "Defeat/defeat_00.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 102,
+						"h": 150
+					},
+					"spriteSourceSize": {
+						"x": 19,
+						"y": 3,
+						"w": 60,
+						"h": 147
+					},
+					"frame": {
+						"x": 196,
+						"y": 448,
+						"w": 60,
+						"h": 147
+					}
+				},
+				{
+					"filename": "Victory/victory_00.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 102,
+						"h": 150
+					},
+					"spriteSourceSize": {
+						"x": 19,
+						"y": 3,
+						"w": 60,
+						"h": 147
+					},
+					"frame": {
+						"x": 197,
+						"y": 299,
+						"w": 60,
+						"h": 147
+					}
+				},
+				{
+					"filename": "Defeat/defeat_01.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 102,
+						"h": 150
+					},
+					"spriteSourceSize": {
+						"x": 28,
+						"y": 3,
+						"w": 51,
+						"h": 140
+					},
+					"frame": {
+						"x": 193,
+						"y": 747,
+						"w": 51,
+						"h": 140
+					}
+				}
+			]
+		}
+	],
+	"meta": {
+		"app": "https://www.codeandweb.com/texturepacker",
+		"version": "3.0",
+		"smartupdate": "$TexturePacker:SmartUpdate:9e42c0fa55d57b6fc51172bd1be5ffdb:3d81cd0a6c5fb0b21ace83f4e2009c03:406ea4be7dc07b8c5e6278b26b65820f$"
+	}
+}

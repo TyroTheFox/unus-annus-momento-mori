@@ -1,0 +1,13 @@
+[
+    {
+        "name": "Spiral",
+        "folderName": "spiral",
+        "components": [
+            {
+                "name": "backdrop",
+                "position": "center",
+                "scale": 4
+            }
+        ]
+    }
+]
