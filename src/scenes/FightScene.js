@@ -2,6 +2,7 @@ import Character from "../engine/Character";
 import * as characterData from '../../assets/characterManifest.json';
 import Stage from "../engine/Stage";
 import HealthBar from "../ui/HealthBar";
+import Button from '../ui/Button';
 
 class FightScene extends Phaser.Scene {
     constructor() {
@@ -34,6 +35,9 @@ class FightScene extends Phaser.Scene {
     }
 
     create() {
+        let sh = this.game.config.height;
+        let sw = this.game.config.width;
+
         this._stage = this._getStageObject( {
             name: 'SpiralArena'
         } );
@@ -79,6 +83,26 @@ class FightScene extends Phaser.Scene {
                 scale: 0.5
             }
         );
+
+        this._attackButton = new Button(this, 'button_Idle', sw / 2, sh * 0.9, {
+            scale: {
+                x: 8,
+                y: 3
+            },
+            spriteOver: 'button_Over',
+            spriteDown: 'button_Down',
+            text: {
+                text: 'Attack',
+                style: {
+                    fontSize: '64px',
+                    fontFamily: 'Arial',
+                    color: '#fff',
+                    align: 'center'
+                },
+                colorOver: '#fff',
+                colorDown: '#000'
+            }
+        } );
 
         this._player1.character.playIdle();
         this._player2.character.playIdle();
