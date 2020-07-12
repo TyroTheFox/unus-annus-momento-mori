@@ -6,9 +6,21 @@ export default class Character extends Phaser.GameObjects.Sprite {
         this.anims.play( 'idle' );
 
         this._maxHP = 5;
-        this._HP = 5;
+        this._damage = 0;
 
         this.scene.add.existing( this );
+    }
+
+    get maxHP () {
+        return this._maxHP;
+    }
+
+    get HP () {
+        return this._maxHP - this._damage;
+    }
+
+    set damage ( value ) {
+        this._damage = value;
     }
 
     playIdle() {

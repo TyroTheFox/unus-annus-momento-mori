@@ -77,15 +77,15 @@ class TitleScene extends Phaser.Scene {
     }
 
     startGame() {
-        this.scene.stop('GameScene');
+        this.scene.stop('FightScene');
         // this.registry.set('attractMode', false);
-        this.scene.start('GameScene');
+        this.scene.start('FightScene');
     }
 
     restartScene() {
         //        this.attractMode.stop();
-        this.scene.stop('GameScene');
-        this.scene.launch('GameScene');
+        this.scene.stop('FightScene');
+        this.scene.launch('FightScene');
         this.scene.bringToTop();
 
         this.registry.set('restartScene', false);

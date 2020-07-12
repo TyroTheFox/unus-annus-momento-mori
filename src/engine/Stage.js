@@ -1,15 +1,16 @@
 import * as backgroundData from '../../assets/backgroundManifest.json';
 
 export default class Stage {
-    constructor( scene, stageName, folderName ) {
+    constructor( scene, stageName ) {
         this._name = stageName;
         this._scene = scene;
-        this._folderName = folderName;
 
         this._components = {};
 
-        const stageData = backgroundData.find( data => data.folderName === this._folderName );
+        const stageData = backgroundData.find( data => data.name === this._name );
         const stageComponents = stageData.components;
+
+        this._playerPositions = stageData.playerPositions || null;
 
         stageComponents.forEach( ( componentData ) => {
             let x = 0;
@@ -21,12 +22,25 @@ export default class Stage {
                     y = scene.game.config.height / 2;
                     break;
                 case 'absolute':
-                    x = componentData.x;
-                    y = componentData.y;
+                    if ( componentData.x === 'center' ) {
+                        x = scene.game.config.width / 2;
+                    } else {
+                        x = componentData.x;
+                    }
+
+                    if ( componentData.y === 'center' ) {
+                        y = scene.game.config.height / 2;
+                    } else {
+                        y = componentData.y;
+                    }
                     break;
             }
 
-            this._components[componentData.name] = this._scene.add.sprite( x, y, `${componentData.name}_${folderName}`).play( `${componentData.name}_${folderName}` );
+            this._components[componentData.name] = this._scene.add.sprite( x, y, `${componentData.name}_${stageData.folderName}`);
+
+            if ( componentData.animated ) {
+                this._components[componentData.name].play( `${componentData.name}_${stageData.folderName}` );
+            }
 
             if ( componentData.scale ) {
                 this._components[componentData.name].setScale( componentData.scale );
@@ -40,5 +54,9 @@ export default class Stage {
                 this._components[componentData.name].setOrigin( componentData.anchor.x, componentData.anchor.y );
             }
         } );
+    }
+
+    get playerPositions () {
+        return this._playerPositions;
     }
 }
