@@ -20,14 +20,18 @@ class FightScene extends Phaser.Scene {
         this._player1 = {
             characterName: null,
             character: null,
-            healthBar: null
+            healthBar: null,
+            rollText: null
         };
 
         this._player2 = {
             characterName: null,
             character: null,
-            healthBar: null
+            healthBar: null,
+            rollText: null
         };
+
+        this._damagePower = 1;
     }
 
     preload() {
@@ -37,6 +41,13 @@ class FightScene extends Phaser.Scene {
     create() {
         let sh = this.game.config.height;
         let sw = this.game.config.width;
+
+        const style = {
+            fontSize: '64px',
+            fontFamily: 'Arial',
+            color: '#fff',
+            align: 'center'
+        }
 
         this._stage = this._getStageObject( {
             name: 'SpiralArena'
@@ -84,6 +95,9 @@ class FightScene extends Phaser.Scene {
             }
         );
 
+        this._player1.rollText = this.add.text( sw * 0.3, sh * 0.9, '', style );
+        this._player2.rollText = this.add.text( sw * 0.65, sh * 0.9, '', style );
+
         this._attackButton = new Button(this, 'button_Idle', sw / 2, sh * 0.9, {
             scale: {
                 x: 8,
@@ -101,11 +115,22 @@ class FightScene extends Phaser.Scene {
                 },
                 colorOver: '#fff',
                 colorDown: '#000'
-            }
+            },
+            callback: this._playTurn
         } );
 
         this._player1.character.playIdle();
         this._player2.character.playIdle();
+    }
+
+    update(time, delta) {
+        if ( this._player1.character.HP !== this._player1.healthBar.currentValue ) {
+            this._player1.healthBar.setValue( this._player1.character.HP );
+        }
+
+        if ( this._player2.character.HP !== this._player2.healthBar.currentValue ) {
+            this._player2.healthBar.setValue( this._player2.character.HP );
+        }
     }
 
     _getCharacterObject( characterData ) {
@@ -116,7 +141,35 @@ class FightScene extends Phaser.Scene {
         return new Stage( this, stageData.name, stageData.folderName );
     }
 
-    update(time, delta) {
+    _makeDieRoll( sides ) {
+        return Math.floor((Math.random() * sides) + 1);
+    }
+
+    _playTurn( context ) {
+        const player1Atack = context._makeDieRoll( 20 );
+        const player2Atack = context._makeDieRoll( 20 );
+
+        context._player1.rollText.text = player1Atack;
+        context._player2.rollText.text = player2Atack;
+
+        if ( player1Atack > player2Atack ) {
+            context._player1.character.playAttack();
+            context._player2.character.addDamage( context._damagePower );
+        } else if ( player1Atack < player2Atack ) {
+            context._player2.character.playAttack();
+            context._player1.character.addDamage( context._damagePower );
+        } else {
+            context._player1.character.playAttack();
+            context._player2.character.playAttack();
+        }
+
+        if ( context._player1.character.HP === 0 ) {
+            context._player1.character.playDefeat();
+        }
+
+        if ( context._player2.character.HP === 0 ) {
+            context._player2.character.playDefeat();
+        }
     }
 }
 

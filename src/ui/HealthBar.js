@@ -36,6 +36,10 @@ export default class HealthBar {
         this._stepWidth = this._mask.displayWidth / this._maximumValue;
     }
 
+    get currentValue() {
+        return this._currentValue;
+    }
+
     setValue( value ) {
         if ( value > this._maximumValue ) {
             this._currentValue = this._maximumValue;

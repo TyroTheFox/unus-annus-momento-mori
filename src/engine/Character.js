@@ -19,8 +19,8 @@ export default class Character extends Phaser.GameObjects.Sprite {
         return this._maxHP - this._damage;
     }
 
-    set damage ( value ) {
-        this._damage = value;
+    addDamage ( value ) {
+        this._damage += value;
     }
 
     playIdle() {

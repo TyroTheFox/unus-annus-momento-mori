@@ -22,7 +22,7 @@ export default class Button extends Phaser.GameObjects.Sprite {
             .on('pointerup', () => {
                 this.enterButtonHoverState();
                 if ( config.callback ) {
-                    config.callback();
+                    config.callback( scene );
                 }
             });
 
