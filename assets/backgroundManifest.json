@@ -6,7 +6,39 @@
             {
                 "name": "backdrop",
                 "position": "center",
-                "scale": 4
+                "scale": 4,
+                "animated": true
+            }
+        ]
+    },
+    {
+        "name": "SpiralArena",
+        "folderName": "spiral",
+        "playerPositions": [
+            {
+                "x": 400,
+                "y": 600,
+                "flip": true
+            },
+            {
+                "x": 1200,
+                "y": 600
+            }
+        ],
+        "components": [
+            {
+                "name": "backdrop",
+                "position": "center",
+                "scale": 4,
+                "animated": true
+            },
+            {
+                "name": "floor",
+                "position": "absolute",
+                "x": "center",
+                "y": 700,
+                "scale": 1.5,
+                "animated": false
             }
         ]
     }

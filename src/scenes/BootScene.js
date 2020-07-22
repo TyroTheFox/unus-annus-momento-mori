@@ -34,6 +34,15 @@ class BootScene extends Phaser.Scene {
         this._characterLoader.getAllCharacterData();
 
         this._backgroundDataLoader.getAllStageData();
+        this.load.image('healthbar_background', 'assets/healthbar/healthbar_background.png');
+        this.load.image('healthbar_bar', 'assets/healthbar/healthbar_bar.png');
+
+        this.load.image('healthbar_backgroundInv', 'assets/healthbar/healthbar_backgroundInv.png');
+        this.load.image('healthbar_barInv', 'assets/healthbar/healthbar_barInv.png');
+
+        this.load.image('button_Idle', 'assets/button/button_0.png');
+        this.load.image('button_Over', 'assets/button/button_2.png');
+        this.load.image('button_Down', 'assets/button/button_1.png');
         // this.load.image('background-clouds', 'assets/images/clouds.png'); // 16-bit later
 
         // Tilemap with a lot of objects and tile-properties tricks

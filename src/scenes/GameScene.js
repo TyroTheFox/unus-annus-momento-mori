@@ -10,7 +10,7 @@ import Character from "../engine/Character";
 import * as characterData from '../../assets/characterManifest.json';
 
 class GameScene extends Phaser.Scene {
-    constructor(test) {
+    constructor() {
         super({
             key: 'GameScene'
         });
