@@ -116,7 +116,10 @@ class FightScene extends Phaser.Scene {
                 colorOver: '#fff',
                 colorDown: '#000'
             },
-            callback: this._playTurn
+            callback: ( context ) => {
+                context._attackButton.setVisible( false );
+                context._playTurn( context );
+            }
         } );
 
         this._player1.character.playIdle();
@@ -145,7 +148,7 @@ class FightScene extends Phaser.Scene {
         return Math.floor((Math.random() * sides) + 1);
     }
 
-    _playTurn( context ) {
+    async _playTurn( context ) {
         const player1Atack = context._makeDieRoll( 20 );
         const player2Atack = context._makeDieRoll( 20 );
 
@@ -153,22 +156,34 @@ class FightScene extends Phaser.Scene {
         context._player2.rollText.text = player2Atack;
 
         if ( player1Atack > player2Atack ) {
-            context._player1.character.playAttack();
+            await context._player1.character.playAttackPromise();
             context._player2.character.addDamage( context._damagePower );
         } else if ( player1Atack < player2Atack ) {
-            context._player2.character.playAttack();
+            await context._player2.character.playAttackPromise();
             context._player1.character.addDamage( context._damagePower );
         } else {
-            context._player1.character.playAttack();
-            context._player2.character.playAttack();
+            await Promise.all( [
+                context._player1.character.playAttackPromise(),
+                context._player2.character.playAttackPromise()
+            ] );
         }
 
         if ( context._player1.character.HP === 0 ) {
-            context._player1.character.playDefeat();
+            await Promise.all( [
+                context._player1.character.playDefeatPromise(),
+                context._player2.character.playVictoryPromise()
+            ] );
         }
 
         if ( context._player2.character.HP === 0 ) {
-            context._player2.character.playDefeat();
+            await Promise.all( [
+                context._player2.character.playDefeatPromise(),
+                context._player1.character.playVictoryPromise()
+            ] );
+        }
+
+        if ( context._player1.character.HP > 0 && context._player2.character.HP > 0 ) {
+            context._attackButton.setVisible( true );
         }
     }
 }

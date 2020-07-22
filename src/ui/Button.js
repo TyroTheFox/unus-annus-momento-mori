@@ -21,7 +21,7 @@ export default class Button extends Phaser.GameObjects.Sprite {
             .on('pointerdown', () => this.enterButtonActiveState() )
             .on('pointerup', () => {
                 this.enterButtonHoverState();
-                if ( config.callback ) {
+                if ( config.callback && this.visible ) {
                     config.callback( scene );
                 }
             });
@@ -34,6 +34,13 @@ export default class Button extends Phaser.GameObjects.Sprite {
             this._text.x -= ( this._text.displayWidth / 2 );
             this._text.y -= ( this._text.displayHeight / 2 );
             this._textConfig = config.text;
+        }
+    }
+
+    setVisible( v ) {
+        this.visible = v;
+        if ( this._text ) {
+            this._text.visible = v;
         }
     }
 
