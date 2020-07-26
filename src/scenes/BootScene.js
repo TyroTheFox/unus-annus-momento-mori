@@ -43,6 +43,18 @@ class BootScene extends Phaser.Scene {
         this.load.image('button_Idle', 'assets/button/button_0.png');
         this.load.image('button_Over', 'assets/button/button_2.png');
         this.load.image('button_Down', 'assets/button/button_1.png');
+
+        this.load.image('titleLogo', 'assets/images/UAMMTitle.png');
+
+        this.anims.create( {
+            key: 'buttonFrames',
+            frames: [
+                { key: 'button_Idle' },
+                { key: 'button_Over' },
+                { key: 'button_Down' }
+            ],
+            frameRate: 10
+        } );
         // this.load.image('background-clouds', 'assets/images/clouds.png'); // 16-bit later
 
         // Tilemap with a lot of objects and tile-properties tricks

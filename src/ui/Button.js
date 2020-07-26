@@ -37,6 +37,26 @@ export default class Button extends Phaser.GameObjects.Sprite {
         }
     }
 
+    set xPos( x ) {
+        this.x = x;
+        if ( this._text ) {
+            const centerPos = this.getCenter();
+            this._text.x = centerPos.x - ( this._text.displayWidth / 2 );
+        }
+    }
+
+    set yPos( y ) {
+        this.y = y;
+        if ( this._text ) {
+            const centerPos = this.getCenter();
+            this._text.y = centerPos.y - ( this._text.displayHeight / 2 );
+        }
+    }
+
+    get text() {
+        return this._text;
+    }
+
     setVisible( v ) {
         this.visible = v;
         if ( this._text ) {

@@ -1,4 +1,5 @@
 import Stage from "../engine/Stage";
+import MenuPanel from '../ui/MenuPanel';
 
 class TitleScene extends Phaser.Scene {
     constructor(test) {
@@ -33,8 +34,51 @@ class TitleScene extends Phaser.Scene {
         this.registry.set('restartScene', false);
         // this.registry.set('attractMode', true);
 
-        let sh = window.screen.availHeight;
-        let sw = window.screen.availWidth;
+        let sh = this.game.config.height;
+        let sw = this.game.config.width;
+
+        this._gameLogo = this.add.sprite( sw * 0.5, sh * 0.3, 'titleLogo' );
+        this._gameLogo.setScale( 2 );
+
+        this._mainMenu = new MenuPanel(
+            this,
+            'button_Idle',
+            sw * 0.5, sh * 0.9,
+            {
+                scale: {
+                    x: 10,
+                    y: 6
+                },
+                button: {
+                    spriteIdle: 'button_Idle',
+                    spriteOver: 'button_Over',
+                    spriteDown: 'button_Down'
+                }
+            }
+        );
+
+        this._mainMenu.addButton(
+            {
+                scale: {
+                    x: 8,
+                    y: 3
+                },
+                text: {
+                    text: 'Fight',
+                    style: {
+                        fontSize: '64px',
+                        fontFamily: 'Arial',
+                        color: '#fff',
+                        align: 'center'
+                    },
+                    colorOver: '#fff',
+                    colorDown: '#000'
+                },
+                callback: ( context ) => {
+                    context.startGame();
+                }
+            }
+        );
 
         // let ch = 0;
         // let cw = 0;
@@ -52,12 +96,6 @@ class TitleScene extends Phaser.Scene {
         //
         // this.pressX = this.add.bitmapText(16 * 8 + 4, 8 * 16, 'font', 'PRESS X TO START', 8);
         // this.blink = 1000;
-
-        this.startKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.X);
-
-        this.input.on('pointerdown', () => {
-            this.startGame();
-        });
     }
 
     update(time, delta) {
@@ -71,15 +109,12 @@ class TitleScene extends Phaser.Scene {
         // }
 
         // if (!this.registry.get('attractMode')) {}
-        if (this.startKey.isDown) {
-            this.startGame();
-        }
     }
 
     startGame() {
-        this.scene.stop('FightScene');
+        this.scene.stop('MenuScene');
         // this.registry.set('attractMode', false);
-        this.scene.start('FightScene');
+        this.scene.start('MenuScene');
     }
 
     restartScene() {

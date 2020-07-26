@@ -3,14 +3,13 @@ import * as characterData from '../../assets/characterManifest.json';
 import Stage from "../engine/Stage";
 import HealthBar from "../ui/HealthBar";
 import Button from '../ui/Button';
+import MenuPanel from '../ui/MenuPanel';
 
 class FightScene extends Phaser.Scene {
     constructor() {
         super({
             key: 'FightScene'
         });
-
-        this._characterList = {};
 
         this._stage = {
             stageName: null,
@@ -32,6 +31,7 @@ class FightScene extends Phaser.Scene {
         };
 
         this._damagePower = 1;
+        this._critDamageMultiplier = 5;
     }
 
     preload() {
@@ -122,6 +122,49 @@ class FightScene extends Phaser.Scene {
             }
         } );
 
+        this._fightMenu = new MenuPanel(
+            this,
+            'button_Idle',
+            sw * 0.5, sh * 0.5,
+            {
+                scale: {
+                    x: 20,
+                    y: 20
+                },
+                button: {
+                    spriteIdle: 'button_Idle',
+                    spriteOver: 'button_Over',
+                    spriteDown: 'button_Down'
+                }
+            }
+        );
+
+        this._fightMenu.addButton(
+            {
+                scale: {
+                    x: 8,
+                    y: 3
+                },
+                text: {
+                    text: 'Return to Menu',
+                    style: {
+                        fontSize: '64px',
+                        fontFamily: 'Arial',
+                        color: '#fff',
+                        align: 'center'
+                    },
+                    colorOver: '#fff',
+                    colorDown: '#000'
+                },
+                callback: ( context ) => {
+                    context.scene.stop('MenuScene');
+                    context.scene.start('MenuScene');
+                }
+            }
+        );
+
+        this._fightMenu.setVisible( false );
+
         this._player1.character.playIdle();
         this._player2.character.playIdle();
     }
@@ -149,18 +192,29 @@ class FightScene extends Phaser.Scene {
     }
 
     async _playTurn( context ) {
-        const player1Atack = context._makeDieRoll( 20 );
-        const player2Atack = context._makeDieRoll( 20 );
+        // Roll d20 Dice
+        const player1Attack = context._makeDieRoll( 20 );
+        const player2Attack = context._makeDieRoll( 20 );
 
-        context._player1.rollText.text = player1Atack;
-        context._player2.rollText.text = player2Atack;
+        // Update Text Elements to display Dice Result to Player
+        context._player1.rollText.text = player1Attack;
+        context._player2.rollText.text = player2Attack;
 
-        if ( player1Atack > player2Atack ) {
+        // Comparing the rolls given
+        if ( player1Attack > player2Attack ) {
             await context._player1.character.playAttackPromise();
-            context._player2.character.addDamage( context._damagePower );
-        } else if ( player1Atack < player2Atack ) {
+            if ( player1Attack === 20 ) {
+                context._player2.character.addDamage( context._damagePower * this._critDamageMultiplier );
+            } else {
+                context._player2.character.addDamage( context._damagePower );
+            }
+        } else if ( player1Attack < player2Attack ) {
             await context._player2.character.playAttackPromise();
-            context._player1.character.addDamage( context._damagePower );
+            if ( player1Attack === 20 ) {
+                context._player1.character.addDamage( context._damagePower * this._critDamageMultiplier );
+            } else {
+                context._player1.character.addDamage( context._damagePower );
+            }
         } else {
             await Promise.all( [
                 context._player1.character.playAttackPromise(),
@@ -168,6 +222,7 @@ class FightScene extends Phaser.Scene {
             ] );
         }
 
+        // Checks for player Death
         if ( context._player1.character.HP === 0 ) {
             await Promise.all( [
                 context._player1.character.playDefeatPromise(),
@@ -182,8 +237,11 @@ class FightScene extends Phaser.Scene {
             ] );
         }
 
+        // If no players are dead, then reset for another round
         if ( context._player1.character.HP > 0 && context._player2.character.HP > 0 ) {
             context._attackButton.setVisible( true );
+        } else {
+            this._fightMenu.setVisible( true );
         }
     }
 }
