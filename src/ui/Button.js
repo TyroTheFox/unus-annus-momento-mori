@@ -15,11 +15,14 @@ export default class Button extends Phaser.GameObjects.Sprite {
             this._downSprite = config.spriteDown;
         }
 
+        this._buttonState = 'idle';
+
         this.setInteractive({ useHandCursor: true })
             .on('pointerover', () => this.enterButtonHoverState() )
             .on('pointerout', () => this.enterButtonRestState() )
             .on('pointerdown', () => this.enterButtonActiveState() )
             .on('pointerup', () => {
+                this._buttonState = 'up';
                 this.enterButtonHoverState();
                 if ( config.callback && this.visible ) {
                     config.callback( scene );
@@ -35,6 +38,10 @@ export default class Button extends Phaser.GameObjects.Sprite {
             this._text.y -= ( this._text.displayHeight / 2 );
             this._textConfig = config.text;
         }
+    }
+
+    get state() {
+        return this._buttonState;
     }
 
     set xPos( x ) {
@@ -65,6 +72,7 @@ export default class Button extends Phaser.GameObjects.Sprite {
     }
 
     enterButtonHoverState() {
+        this._buttonState = 'over';
         if ( this._textConfig && this._textConfig.colorOver ) {
             this._text.setColor( this._textConfig.colorOver );
         }
@@ -74,6 +82,7 @@ export default class Button extends Phaser.GameObjects.Sprite {
     }
 
     enterButtonRestState() {
+        this._buttonState = 'idle';
         if ( this._textConfig ) {
             this._text.setColor( this._textConfig.style.color );
         }
@@ -81,6 +90,7 @@ export default class Button extends Phaser.GameObjects.Sprite {
     }
 
     enterButtonActiveState() {
+        this._buttonState = 'down';
         if ( this._textConfig && this._textConfig.colorDown ) {
             this._text.setColor( this._textConfig.colorDown );
         }

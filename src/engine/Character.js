@@ -1,7 +1,8 @@
 export default class Character extends Phaser.GameObjects.Sprite {
     constructor( scene, x, y, characterName, folderName ) {
         super( scene, x, y, characterName );
-        this._folderName = folderName;
+        this.characterName = characterName;
+        this.folderName = folderName;
 
         this.anims.play( 'idle' );
 

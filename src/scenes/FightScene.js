@@ -20,18 +20,28 @@ class FightScene extends Phaser.Scene {
             characterName: null,
             character: null,
             healthBar: null,
-            rollText: null
+            rollText: null,
+            data: null
         };
 
         this._player2 = {
             characterName: null,
             character: null,
             healthBar: null,
-            rollText: null
+            rollText: null,
+            data: null
         };
 
         this._damagePower = 1;
         this._critDamageMultiplier = 5;
+    }
+
+    init( data ) {
+        this._player1.characterName = data.player1.name;
+        this._player1.data = data.player1;
+
+        this._player2.characterName = data.player2.name;
+        this._player2.data = data.player2;
     }
 
     preload() {
@@ -55,11 +65,8 @@ class FightScene extends Phaser.Scene {
 
         const playerPostions = this._stage.playerPositions;
 
-        this._player1.characterName = 'annus';
-        this._player1.character = this._getCharacterObject( characterData.default[0] );
-
-        this._player2.characterName = 'annus';
-        this._player2.character = this._getCharacterObject( characterData.default[0] );
+        this._player1.character = this._getCharacterObject(  this._player1.data );
+        this._player2.character = this._getCharacterObject(  this._player2.data );
 
         if ( playerPostions ) {
             this._player1.character.x = playerPostions[0].x;
@@ -156,9 +163,33 @@ class FightScene extends Phaser.Scene {
                     colorOver: '#fff',
                     colorDown: '#000'
                 },
-                callback: ( context ) => {
-                    context.scene.stop('MenuScene');
-                    context.scene.start('MenuScene');
+                callback: ( button ) => {
+                    this.scene.stop('MenuScene');
+                    this.scene.start('MenuScene');
+                }
+            }
+        );
+
+        this._fightMenu.addButton(
+            {
+                scale: {
+                    x: 8,
+                    y: 3
+                },
+                text: {
+                    text: 'Character Select',
+                    style: {
+                        fontSize: '64px',
+                        fontFamily: 'Arial',
+                        color: '#fff',
+                        align: 'center'
+                    },
+                    colorOver: '#fff',
+                    colorDown: '#000'
+                },
+                callback: ( button ) => {
+                    this.scene.stop( 'MenuScene' );
+                    this.scene.start( 'MenuScene', { setToCharacterSelect: true } );
                 }
             }
         );
