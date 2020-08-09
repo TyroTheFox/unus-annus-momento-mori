@@ -158,6 +158,10 @@ class MenuScene extends Phaser.Scene {
                     },
                     colorOver: '#fff',
                     colorDown: '#000'
+                },
+                callback: () => {
+                    this.scene.stop( 'OptionsScene' );
+                    this.scene.start( 'OptionsScene' );
                 }
             }
         );
