@@ -74,8 +74,8 @@ class TitleScene extends Phaser.Scene {
                     colorOver: '#fff',
                     colorDown: '#000'
                 },
-                callback: ( context ) => {
-                    context.startGame();
+                callback: () => {
+                    this.startGame();
                 }
             }
         );
