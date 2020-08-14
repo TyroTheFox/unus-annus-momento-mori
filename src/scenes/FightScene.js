@@ -224,6 +224,29 @@ class FightScene extends Phaser.Scene {
                     y: 3
                 },
                 text: {
+                    text: 'Rematch',
+                    style: {
+                        fontSize: '64px',
+                        fontFamily: 'Arial',
+                        color: '#fff',
+                        align: 'center'
+                    },
+                    colorOver: '#fff',
+                    colorDown: '#000'
+                },
+                callback: ( button ) => {
+                    this._reset();
+                }
+            }
+        );
+
+        this._fightMenu.addButton(
+            {
+                scale: {
+                    x: 8,
+                    y: 3
+                },
+                text: {
                     text: 'Return to Menu',
                     style: {
                         fontSize: '64px',
@@ -369,6 +392,24 @@ class FightScene extends Phaser.Scene {
         } else {
             this._fightMenu.setVisible( true );
         }
+    }
+
+    _reset() {
+        this._player1.healthBar.resetValue();
+        this._player2.healthBar.resetValue();
+
+        this._player1.character.resetHP();
+        this._player2.character.resetHP();
+
+        this._fightMenu.setVisible( false );
+
+        this._player2.character.playAnimation( 'idle' );
+        this._player1.character.playAnimation( 'idle' );
+
+        this._die1.reset();
+        this._die2.reset();
+
+        this._attackButton.setVisible( true );
     }
 }
 

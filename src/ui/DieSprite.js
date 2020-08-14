@@ -97,4 +97,11 @@ export default class DieSprite extends Phaser.GameObjects.Sprite {
             this.scene.tweens.add( config );
         } );
     }
+
+    reset() {
+        const centerPos = this.getCenter();
+
+        this.rollText.text = '';
+        this.rollText.y = centerPos.y;
+    }
 }

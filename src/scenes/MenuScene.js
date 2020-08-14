@@ -486,6 +486,8 @@ class MenuScene extends Phaser.Scene {
 
         if ( this._skipToCharacterSelect ) {
             this._setToCharacterSelect();
+        } else {
+            this._reset();
         }
 
         if ( this._characterMenu.buttonCount <= 5 ) {
