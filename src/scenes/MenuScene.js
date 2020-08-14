@@ -18,6 +18,7 @@ class MenuScene extends Phaser.Scene {
         this._player1Select = true;
 
         this._chosenStage = null;
+        this._stagePreview = null;
 
         this._skipToCharacterSelect = false;
     }
@@ -359,8 +360,6 @@ class MenuScene extends Phaser.Scene {
                 },
                 callback: ( button, additionalData ) => {
                     this._reset();
-                    // this.scene.stop( 'MenuScene' );
-                    // this.scene.start( 'MenuScene', { setToCharacterSelect: false } );
                 }
             }
         );
@@ -423,6 +422,9 @@ class MenuScene extends Phaser.Scene {
                                 this._chosenStage = additionalData.stageData;
                                 this._stageMenu.setVisible(false);
                                 this._confirmMenu.setVisible(true);
+                                this._stagePreview = this._getStageObject( this._chosenStage );
+                                this._stagePreview.setStageZIndex( -1 );
+                                this._titleBackdrop.setVisible( false );
                             }
                         }
                     }
@@ -534,6 +536,13 @@ class MenuScene extends Phaser.Scene {
             this._player2.destroy();
         }
 
+        if ( this._stagePreview ) {
+            this._stagePreview.cleanUp();
+            delete this._stagePreview;
+        }
+
+        this._titleBackdrop.setVisible( true );
+
         this._currentlySelectingPlayer = this._player1SpritePosition;
 
         this._player1 = null;
@@ -555,6 +564,13 @@ class MenuScene extends Phaser.Scene {
     }
 
     _resetToStageSelect() {
+        if ( this._stagePreview ) {
+            this._stagePreview.cleanUp();
+            delete this._stagePreview;
+        }
+
+        this._titleBackdrop.setVisible( true );
+
         this._chosenStage = null;
         this._confirmMenu.setVisible( false );
         this._stageMenu.setVisible( true );
@@ -578,6 +594,10 @@ class MenuScene extends Phaser.Scene {
 
     _getCharacterObject( characterData ) {
         return new Character( this, 100, 100, characterData.name, characterData.folderName );
+    }
+
+    _getStageObject( stageData ) {
+        return new Stage( this, stageData.name, stageData.folderName );
     }
 }
 

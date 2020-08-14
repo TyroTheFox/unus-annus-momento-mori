@@ -94,4 +94,28 @@ export default class Stage {
             this._bgmCurrentlyPlaying = music.name;
         }
     }
+
+    setStageZIndex( zIndex ) {
+        for ( let [key, component] of Object.entries( this._components ) ) {
+            component.setDepth( zIndex );
+        }
+    }
+
+    setVisible( v ) {
+        for ( let [key, component] of Object.entries( this._components ) ) {
+            component.setVisible( v );
+        }
+    }
+
+    cleanUp() {
+        for ( let [key, component] of Object.entries( this._components ) ) {
+            component.destroy();
+        }
+
+        this._bgm.forEach( ( bgmData ) => {
+            bgmData.music.destroy();
+        } );
+
+        delete this._components;
+    }
 }
