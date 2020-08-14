@@ -1,4 +1,5 @@
 // import makeAnimations from '../helpers/animations';
+import * as soundsData from '../../assets/soundManifest.json';
 
 import CharacterDataLoader from "../engine/CharacterDataLoader";
 import BackgroundDataLoader from "../engine/BackgroundDataLoader";
@@ -14,6 +15,8 @@ class BootScene extends Phaser.Scene {
     }
 
     preload() {
+        const promises = [];
+
         const progress = this.add.graphics();
 
         // Register a load progress event to show a load bar
@@ -34,6 +37,11 @@ class BootScene extends Phaser.Scene {
         this._characterLoader.getAllCharacterData();
 
         this._backgroundDataLoader.getAllStageData();
+
+        soundsData.default.forEach( ( sound ) => {
+            this.load.audio( sound.name, `assets/audio/${sound.path}` )
+        } );
+
         this.load.image('healthbar_background', 'assets/healthbar/healthbar_background.png');
         this.load.image('healthbar_bar', 'assets/healthbar/healthbar_bar.png');
 
@@ -45,6 +53,8 @@ class BootScene extends Phaser.Scene {
         this.load.image('button_Down', 'assets/button/button_1.png');
 
         this.load.image('titleLogo', 'assets/images/UAMMTitle.png');
+
+        this.load.image('dieSprite', 'assets/images/diesprite.png');
 
         this.anims.create( {
             key: 'buttonFrames',

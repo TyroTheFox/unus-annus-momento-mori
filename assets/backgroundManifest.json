@@ -9,7 +9,13 @@
                 "scale": 4,
                 "animated": true
             }
-        ]
+        ],
+        "bgm": {
+            "name": "jazzremix",
+            "config": {
+                "loop": true
+            }
+        }
     },
     {
         "name": "SpiralArena",
@@ -40,6 +46,12 @@
                 "scale": 1.5,
                 "animated": false
             }
-        ]
+        ],
+        "bgm": {
+            "name": "jazzremix",
+            "config": {
+                "loop": true
+            }
+        }
     }
 ]
