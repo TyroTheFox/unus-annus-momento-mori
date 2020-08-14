@@ -7,10 +7,36 @@ export default class Stage {
 
         this._components = {};
 
+        this._bgm = [];
+        this._bgmCurrentlyPlaying = null;
+
         const stageData = backgroundData.find( data => data.name === this._name );
         const stageComponents = stageData.components;
 
         this._playerPositions = stageData.playerPositions || null;
+
+        if ( stageData.bgm ) {
+            const musicToLoad = [];
+            if ( Array.isArray( stageData.bgm ) ) {
+                musicToLoad.push( ...stageData.bgm );
+            } else {
+                musicToLoad.push( stageData.bgm );
+            }
+
+            musicToLoad.forEach( ( musicData ) => {
+                const music = this._bgm.find( music => music.name === musicData.name );
+
+                if ( !music ) {
+                    const configData = musicData.config || {};
+
+                    const data = {
+                        ...musicData,
+                        music: this._scene.sound.add( musicData.name, configData )
+                    }
+                    this._bgm.push( data );
+                }
+            } );
+        }
 
         stageComponents.forEach( ( componentData ) => {
             let x = 0;
@@ -58,5 +84,14 @@ export default class Stage {
 
     get playerPositions () {
         return this._playerPositions;
+    }
+
+    playBGM() {
+        if ( this._bgm.length > 0 ) {
+            this._scene.sound.stopAll();
+            const music = Phaser.Math.RND.pick( this._bgm );
+            music.music.play();
+            this._bgmCurrentlyPlaying = music.name;
+        }
     }
 }

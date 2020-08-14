@@ -5,6 +5,7 @@ import GameScene from './scenes/GameScene';
 import TitleScene from './scenes/TitleScene';
 import FightScene from './scenes/FightScene';
 import MenuScene from './scenes/MenuScene';
+import OptionsScene from './scenes/OptionsScene'
 
 // For more settings see <https://github.com/photonstorm/phaser/blob/master/src/boot/Config.js>
 const config = {
@@ -28,7 +29,8 @@ const config = {
         TitleScene,
         GameScene,
         FightScene,
-        MenuScene
+        MenuScene,
+        OptionsScene
     ]
 };
 

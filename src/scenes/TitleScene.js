@@ -8,6 +8,8 @@ class TitleScene extends Phaser.Scene {
         });
 
         this._titleBackdrop = null;
+
+        this._playingBackgroundMusic = false;
     }
     preload() {
         // this.load.atlas('mario-sprites', 'assets/mario-sprites.png', 'assets/mario-sprites.json');
@@ -102,6 +104,11 @@ class TitleScene extends Phaser.Scene {
         if (this.registry.get('restartScene')) {
             this.restartScene();
         }
+
+        if ( !this._playingBackgroundMusic ) {
+            this._titleBackdrop.playBGM();
+            this._playingBackgroundMusic = true;
+        }
         // this.blink -= delta;
         // if (this.blink < 0) {
         //     this.pressX.alpha = this.pressX.alpha === 1 ? 0 : 1;
@@ -112,7 +119,7 @@ class TitleScene extends Phaser.Scene {
     }
 
     startGame() {
-        this.scene.stop('MenuScene');
+        // this.scene.stop('MenuScene');
         // this.registry.set('attractMode', false);
         this.scene.start('MenuScene');
     }
