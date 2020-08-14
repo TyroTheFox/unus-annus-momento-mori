@@ -15,7 +15,8 @@
             "config": {
                 "loop": true
             }
-        }
+        },
+        "type": "background"
     },
     {
         "name": "SpiralArena",
@@ -52,6 +53,7 @@
             "config": {
                 "loop": true
             }
-        }
+        },
+        "type": "stage"
     }
 ]

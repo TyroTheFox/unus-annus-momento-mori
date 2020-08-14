@@ -13,6 +13,7 @@ class FightScene extends Phaser.Scene {
         });
 
         this._stage = null;
+        this._stageData = null;
 
         this._player1 = {
             characterName: null,
@@ -40,6 +41,8 @@ class FightScene extends Phaser.Scene {
 
         this._player2.characterName = data.player2.name;
         this._player2.data = data.player2;
+
+        this._stageData = data.stage;
     }
 
     preload() {
@@ -57,9 +60,7 @@ class FightScene extends Phaser.Scene {
             align: 'center'
         }
 
-        this._stage = this._getStageObject( {
-            name: 'SpiralArena'
-        } );
+        this._stage = this._getStageObject( this._stageData );
 
         this._die1 = new DieSprite(
             this, 'dieSprite',
