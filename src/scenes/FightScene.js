@@ -220,7 +220,7 @@ class FightScene extends Phaser.Scene {
         this._fightMenu.addButton(
             {
                 scale: {
-                    x: 8,
+                    x: 17,
                     y: 3
                 },
                 text: {
@@ -243,31 +243,7 @@ class FightScene extends Phaser.Scene {
         this._fightMenu.addButton(
             {
                 scale: {
-                    x: 8,
-                    y: 3
-                },
-                text: {
-                    text: 'Return to Menu',
-                    style: {
-                        fontSize: '64px',
-                        fontFamily: 'Arial',
-                        color: '#fff',
-                        align: 'center'
-                    },
-                    colorOver: '#fff',
-                    colorDown: '#000'
-                },
-                callback: ( button ) => {
-                    this.scene.stop('MenuScene');
-                    this.scene.start('MenuScene');
-                }
-            }
-        );
-
-        this._fightMenu.addButton(
-            {
-                scale: {
-                    x: 8,
+                    x: 17,
                     y: 3
                 },
                 text: {
@@ -284,6 +260,30 @@ class FightScene extends Phaser.Scene {
                 callback: ( button ) => {
                     this.scene.stop( 'MenuScene' );
                     this.scene.start( 'MenuScene', { setToCharacterSelect: true } );
+                }
+            }
+        );
+
+        this._fightMenu.addButton(
+            {
+                scale: {
+                    x: 17,
+                    y: 3
+                },
+                text: {
+                    text: 'Return to Menu',
+                    style: {
+                        fontSize: '64px',
+                        fontFamily: 'Arial',
+                        color: '#fff',
+                        align: 'center'
+                    },
+                    colorOver: '#fff',
+                    colorDown: '#000'
+                },
+                callback: ( button ) => {
+                    this.scene.stop('MenuScene');
+                    this.scene.start('MenuScene');
                 }
             }
         );

@@ -117,7 +117,7 @@ class MenuScene extends Phaser.Scene {
         this._mainMenu.addButton(
             {
                 scale: {
-                    x: 8,
+                    x: 15,
                     y: 3
                 },
                 text: {
@@ -142,11 +142,11 @@ class MenuScene extends Phaser.Scene {
         this._mainMenu.addButton(
             {
                 scale: {
-                    x: 8,
+                    x: 15,
                     y: 3
                 },
                 text: {
-                    text: 'Option',
+                    text: 'Options',
                     style: {
                         fontSize: '64px',
                         fontFamily: 'Arial',
@@ -196,7 +196,7 @@ class MenuScene extends Phaser.Scene {
             this._characterMenu.addButton(
                 {
                     scale: {
-                        x: 10,
+                        x: 25,
                         y: 3
                     },
                     text: {
@@ -310,7 +310,7 @@ class MenuScene extends Phaser.Scene {
         this._confirmMenu.addButton(
             {
                 scale: {
-                    x: 10,
+                    x: 17,
                     y: 3
                 },
                 text: {
@@ -344,7 +344,7 @@ class MenuScene extends Phaser.Scene {
         this._confirmMenu.addButton(
             {
                 scale: {
-                    x: 10,
+                    x: 17,
                     y: 3
                 },
                 text: {
@@ -400,7 +400,7 @@ class MenuScene extends Phaser.Scene {
                 this._stageMenu.addButton(
                     {
                         scale: {
-                            x: 10,
+                            x: 25,
                             y: 3
                         },
                         text: {
