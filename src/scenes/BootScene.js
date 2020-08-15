@@ -48,6 +48,8 @@ class BootScene extends Phaser.Scene {
         this.load.image('healthbar_backgroundInv', 'assets/healthbar/healthbar_backgroundInv.png');
         this.load.image('healthbar_barInv', 'assets/healthbar/healthbar_barInv.png');
 
+        this.load.image('healthbar_barRed', 'assets/healthbar/healthbar_barRed.png');
+
         this.load.image('button_Idle', 'assets/button/button_0.png');
         this.load.image('button_Over', 'assets/button/button_2.png');
         this.load.image('button_Down', 'assets/button/button_1.png');
