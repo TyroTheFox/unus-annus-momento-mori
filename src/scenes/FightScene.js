@@ -30,7 +30,7 @@ class FightScene extends Phaser.Scene {
         };
 
         this._damagePower = 1;
-        this._critDamageMultiplier = 5;
+        this._critDamage = 5;
 
         this._playingBackgroundMusic = false;
     }
@@ -43,6 +43,18 @@ class FightScene extends Phaser.Scene {
         this._player2.data = data.player2;
 
         this._stageData = data.stage;
+
+        if ( this._optionsData ) {
+            this._damagePower = this._optionsData.damage;
+            this._critDamage = this._optionsData.crit;
+            if ( this._player1 && this._player1.healthBar ) {
+                this._player1.healthBar.setMaximumValue( this._optionsData.HP );
+            }
+
+            if ( this._player2 && this._player2.healthBar ) {
+                this._player2.healthBar.setMaximumValue( this._optionsData.HP );
+            }
+        }
     }
 
     preload() {
@@ -52,6 +64,10 @@ class FightScene extends Phaser.Scene {
     create() {
         let sh = this.game.config.height;
         let sw = this.game.config.width;
+
+        this._optionsData = this.registry.get( '__GameOptionsData' );
+        this._damagePower = this._optionsData.damage;
+        this._critDamage = this._optionsData.crit;
 
         const style = {
             fontSize: '64px',
@@ -162,7 +178,13 @@ class FightScene extends Phaser.Scene {
                 flip: false,
                 x: 400,
                 y: 100,
-                scale: 0.5
+                scale: 0.5,
+                characterName: this._player1.character.characterName,
+                textStyle: {
+                    fontSize: '30px',
+                        fontFamily: 'Arial',
+                        color: '#fff'
+                }
             }
         );
         this._player2.healthBar = new HealthBar( this,
@@ -172,7 +194,13 @@ class FightScene extends Phaser.Scene {
                 invert: true,
                 x: 1200,
                 y: 100,
-                scale: 0.5
+                scale: 0.5,
+                characterName: this._player1.character.characterName,
+                textStyle: {
+                    fontSize: '30px',
+                    fontFamily: 'Arial',
+                    color: '#fff'
+                }
             }
         );
 
@@ -234,6 +262,7 @@ class FightScene extends Phaser.Scene {
                     colorOver: '#fff',
                     colorDown: '#000'
                 },
+                icon: 'swordIcon',
                 callback: ( button ) => {
                     this._reset();
                 }
@@ -257,6 +286,7 @@ class FightScene extends Phaser.Scene {
                     colorOver: '#fff',
                     colorDown: '#000'
                 },
+                icon: 'personIcon',
                 callback: ( button ) => {
                     this.scene.stop( 'MenuScene' );
                     this.scene.start( 'MenuScene', { setToCharacterSelect: true } );
@@ -281,7 +311,9 @@ class FightScene extends Phaser.Scene {
                     colorOver: '#fff',
                     colorDown: '#000'
                 },
+                icon: 'backIcon',
                 callback: ( button ) => {
+                    this._stage.stopBGM();
                     this.scene.stop('MenuScene');
                     this.scene.start('MenuScene');
                 }
@@ -341,11 +373,14 @@ class FightScene extends Phaser.Scene {
                 context._player2.character.playAnimationPromise( 'damage' )
             ] );
 
-            if ( player1Attack === 20 ) {
-                context._player2.character.addDamage( context._damagePower * this._critDamageMultiplier );
+            let damage = 0;
+            if ( player1Attack >= 20 ) {
+                damage = context._critDamage;
             } else {
-                context._player2.character.addDamage( context._damagePower );
+                damage =  context._damagePower;
             }
+
+            context._player2.character.addDamage( damage );
         } else if ( player1Attack < player2Attack ) {
             await Promise.all( [
                 context._die1.dieFailAnimation(),
@@ -353,11 +388,14 @@ class FightScene extends Phaser.Scene {
                 context._player1.character.playAnimationPromise( 'damage' )
             ] );
 
-            if ( player1Attack === 20 ) {
-                context._player1.character.addDamage( context._damagePower * this._critDamageMultiplier );
+            let damage = 0;
+            if ( player2Attack >= 20 ) {
+                damage = context._critDamage;
             } else {
-                context._player1.character.addDamage( context._damagePower );
+                damage =  context._damagePower;
             }
+
+            context._player1.character.addDamage( damage );
         } else {
             await Promise.all( [
                 context._die1.dieFailAnimation(),
@@ -395,6 +433,8 @@ class FightScene extends Phaser.Scene {
     }
 
     _reset() {
+        this._stage.resetBGM();
+
         this._player1.healthBar.resetValue();
         this._player2.healthBar.resetValue();
 

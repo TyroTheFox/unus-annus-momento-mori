@@ -34,6 +34,20 @@ class BootScene extends Phaser.Scene {
             this.scene.start('TitleScene');
         });
 
+        this.registry.set( '__GameOptionsDefaultData', {
+            HP: 5,
+            damage: 1,
+            crit: 5
+        } );
+
+        this.registry.set( '__GameOptionsData', {
+            HP: 5,
+            damage: 1,
+            crit: 5,
+            musicVolume: 0.75,
+            sfxVolume: 1
+        } );
+
         this._characterLoader.getAllCharacterData();
 
         this._backgroundDataLoader.getAllStageData();
@@ -57,6 +71,11 @@ class BootScene extends Phaser.Scene {
         this.load.image('titleLogo', 'assets/images/UAMMTitle.png');
 
         this.load.image('dieSprite', 'assets/images/diesprite.png');
+
+        this.load.image('backIcon', 'assets/button/back.png');
+        this.load.image('optionsIcon', 'assets/button/options.png');
+        this.load.image('personIcon', 'assets/button/person.png');
+        this.load.image('swordIcon', 'assets/button/sword.png');
 
         this.anims.create( {
             key: 'buttonFrames',
