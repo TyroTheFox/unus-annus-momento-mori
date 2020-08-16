@@ -158,6 +158,9 @@ class FightScene extends Phaser.Scene {
         this._player1.character = this._getCharacterObject(  this._player1.data );
         this._player2.character = this._getCharacterObject(  this._player2.data );
 
+        this._player1.character.emitterTarget = this._player2.character;
+        this._player2.character.emitterTarget = this._player1.character;
+
         if ( playerPostions ) {
             this._player1.character.x = playerPostions[0].x;
             this._player1.character.y = playerPostions[0].y;

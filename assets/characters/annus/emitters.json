@@ -1,0 +1,18 @@
+[
+    {
+        "name": "basic",
+        "action": "attack",
+        "particles": {
+            "type": "texture",
+            "path": "basic.png"
+        },
+        "config": {
+            "speed": 200,
+            "lifespan": 300,
+            "blendMode": "ADD"
+        },
+        "duration": 100,
+        "frame": 1,
+        "target": "enemy"
+    }
+]
