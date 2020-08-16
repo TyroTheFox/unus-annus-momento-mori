@@ -1,4 +1,5 @@
-// import makeAnimations from '../helpers/animations';
+import WebFont from 'webfontloader';
+
 import * as soundsData from '../../assets/soundManifest.json';
 
 import CharacterDataLoader from "../engine/CharacterDataLoader";
@@ -12,6 +13,25 @@ class BootScene extends Phaser.Scene {
 
         this._characterLoader = new CharacterDataLoader( this );
         this._backgroundDataLoader = new BackgroundDataLoader( this );
+    }
+
+    init() {
+        //  Inject our CSS
+        const element = document.createElement('style');
+
+        document.head.appendChild(element);
+
+        const sheet = element.sheet;
+
+        const styles = '@font-face { font-family: "Poppins"; src: url("assets/fonts/Poppins-Bold.ttf") format("truetype"); }\n';
+
+        sheet.insertRule(styles, 0);
+
+        WebFont.load( {
+            custom: {
+                families: [ 'Poppins' ]
+            }
+        } )
     }
 
     preload() {

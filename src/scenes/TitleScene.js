@@ -66,10 +66,10 @@ class TitleScene extends Phaser.Scene {
                     y: 3
                 },
                 text: {
-                    text: 'Fight',
+                    text: 'START',
                     style: {
                         fontSize: '64px',
-                        fontFamily: 'Arial',
+                        fontFamily: 'Poppins',
                         color: '#fff',
                         align: 'center'
                     },

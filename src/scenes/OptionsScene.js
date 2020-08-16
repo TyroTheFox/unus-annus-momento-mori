@@ -12,6 +12,13 @@ class OptionsScene extends Phaser.Scene {
 
         this._optionsKey = '__GameOptionsData';
         this._optionsDefaultKey = '__GameOptionsDefaultData';
+
+        this._textStyle = {
+            fontSize: '50px',
+            fontFamily: 'Poppins',
+            color: '#fff',
+            align: 'center'
+        }
     }
 
     init() {
@@ -87,13 +94,8 @@ class OptionsScene extends Phaser.Scene {
                     y: 3
                 },
                 text: {
-                    text: `Music Volume: ${this._optionsData.musicVolume * 100}%`,
-                    style: {
-                        fontSize: '64px',
-                        fontFamily: 'Arial',
-                        color: '#fff',
-                        align: 'center'
-                    },
+                    text: `MUSIC VOLUME: ${this._optionsData.musicVolume * 100}%`,
+                    style: this._textStyle,
                     colorOver: '#fff',
                     colorDown: '#000'
                 },
@@ -106,7 +108,7 @@ class OptionsScene extends Phaser.Scene {
 
                     this.registry.set( this._optionsKey, this._optionsData );
 
-                    button.text.text = `Music Volume: ${this._optionsData.musicVolume * 100}%`;
+                    button.text.text = `MUSIC VOLUME: ${this._optionsData.musicVolume * 100}%`;
                 }
             }
         );
@@ -118,13 +120,8 @@ class OptionsScene extends Phaser.Scene {
                     y: 3
                 },
                 text: {
-                    text: `SFX Volume: ${this._optionsData.sfxVolume * 100}%`,
-                    style: {
-                        fontSize: '64px',
-                        fontFamily: 'Arial',
-                        color: '#fff',
-                        align: 'center'
-                    },
+                    text: `SFX VOLUME: ${this._optionsData.sfxVolume * 100}%`,
+                    style: this._textStyle,
                     colorOver: '#fff',
                     colorDown: '#000'
                 },
@@ -137,7 +134,7 @@ class OptionsScene extends Phaser.Scene {
 
                     this.registry.set( this._optionsKey, this._optionsData );
 
-                    button.text.text = `SFX Volume: ${this._optionsData.sfxVolume * 100}%`;
+                    button.text.text = `SFX VOLUME: ${this._optionsData.sfxVolume * 100}%`;
                 }
             }
         );
@@ -149,13 +146,8 @@ class OptionsScene extends Phaser.Scene {
                     y: 3
                 },
                 text: {
-                    text: `Max HP: ${this._optionsData.HP}`,
-                    style: {
-                        fontSize: '64px',
-                        fontFamily: 'Arial',
-                        color: '#fff',
-                        align: 'center'
-                    },
+                    text: `MAX HP: ${this._optionsData.HP}`,
+                    style: this._textStyle,
                     colorOver: '#fff',
                     colorDown: '#000'
                 },
@@ -168,7 +160,7 @@ class OptionsScene extends Phaser.Scene {
 
                     this.registry.set( this._optionsKey, this._optionsData );
 
-                    button.text.text = `Max HP: ${this._optionsData.HP}`;
+                    button.text.text = `MAX HP: ${this._optionsData.HP}`;
                 }
             }
         );
@@ -180,13 +172,8 @@ class OptionsScene extends Phaser.Scene {
                     y: 3
                 },
                 text: {
-                    text: `Attack Damage: ${this._optionsData.damage}`,
-                    style: {
-                        fontSize: '64px',
-                        fontFamily: 'Arial',
-                        color: '#fff',
-                        align: 'center'
-                    },
+                    text: `ATTACK DAMAGE: ${this._optionsData.damage}`,
+                    style: this._textStyle,
                     colorOver: '#fff',
                     colorDown: '#000'
                 },
@@ -203,7 +190,7 @@ class OptionsScene extends Phaser.Scene {
 
                     this.registry.set( this._optionsKey, this._optionsData );
 
-                    button.text.text = `Attack Damage: ${this._optionsData.damage}`;
+                    button.text.text = `ATTACK DAMAGE: ${this._optionsData.damage}`;
                 }
             }
         );
@@ -215,13 +202,8 @@ class OptionsScene extends Phaser.Scene {
                     y: 3
                 },
                 text: {
-                    text: `Crit Damage: ${this._optionsData.crit}`,
-                    style: {
-                        fontSize: '64px',
-                        fontFamily: 'Arial',
-                        color: '#fff',
-                        align: 'center'
-                    },
+                    text: `CRIT DAMAGE: ${this._optionsData.crit}`,
+                    style: this._textStyle,
                     colorOver: '#fff',
                     colorDown: '#000'
                 },
@@ -238,7 +220,7 @@ class OptionsScene extends Phaser.Scene {
 
                     this.registry.set( this._optionsKey, this._optionsData );
 
-                    button.text.text = `Crit Damage: ${this._optionsData.crit}`;
+                    button.text.text = `CRIT DAMAGE: ${this._optionsData.crit}`;
                 }
             }
         );
@@ -250,13 +232,8 @@ class OptionsScene extends Phaser.Scene {
                     y: 3
                 },
                 text: {
-                    text: `Reset Fights To Defaults`,
-                    style: {
-                        fontSize: '64px',
-                        fontFamily: 'Arial',
-                        color: '#fff',
-                        align: 'center'
-                    },
+                    text: `RESET FIGHT SETTINGS`,
+                    style: this._textStyle,
                     colorOver: '#fff',
                     colorDown: '#000'
                 },
@@ -269,9 +246,9 @@ class OptionsScene extends Phaser.Scene {
 
                     this._optionsData = this.registry.get( this._optionsKey );
 
-                    this._hp.text.text = `Max HP: ${optionsDefaultData.HP}`;
-                    this._damage.text.text = `Attack Damage: ${optionsDefaultData.damage}`;
-                    this._crit.text.text = `Crit Damage: ${optionsDefaultData.crit}`;
+                    this._hp.text.text = `MAX HP: ${optionsDefaultData.HP}`;
+                    this._damage.text.text = `ATTACK DAMAGE: ${optionsDefaultData.damage}`;
+                    this._crit.text.text = `CRIT DAMAGE: ${optionsDefaultData.crit}`;
                 }
             }
         );

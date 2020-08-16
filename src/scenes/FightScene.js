@@ -32,6 +32,13 @@ class FightScene extends Phaser.Scene {
         this._damagePower = 1;
         this._critDamage = 5;
 
+        this._textStyle = {
+            fontSize: '50px',
+            fontFamily: 'Poppins',
+            color: '#fff',
+            align: 'center'
+        }
+
         this._playingBackgroundMusic = false;
     }
 
@@ -69,13 +76,6 @@ class FightScene extends Phaser.Scene {
         this._damagePower = this._optionsData.damage;
         this._critDamage = this._optionsData.crit;
 
-        const style = {
-            fontSize: '64px',
-            fontFamily: 'Arial',
-            color: '#fff',
-            align: 'center'
-        }
-
         this._stage = this._getStageObject( this._stageData );
 
         this._die1 = new DieSprite(
@@ -109,7 +109,7 @@ class FightScene extends Phaser.Scene {
                 },
                 style: {
                     fontSize: '64px',
-                    fontFamily: 'Arial',
+                    fontFamily: 'Poppins',
                     color: '#fff',
                     align: 'center'
                 }
@@ -146,7 +146,7 @@ class FightScene extends Phaser.Scene {
                 },
                 style: {
                     fontSize: '64px',
-                    fontFamily: 'Arial',
+                    fontFamily: 'Poppins',
                     color: '#fff',
                     align: 'center'
                 }
@@ -182,8 +182,8 @@ class FightScene extends Phaser.Scene {
                 characterName: this._player1.character.characterName,
                 textStyle: {
                     fontSize: '30px',
-                        fontFamily: 'Arial',
-                        color: '#fff'
+                    fontFamily: 'Poppins',
+                    color: '#fff'
                 }
             }
         );
@@ -198,7 +198,7 @@ class FightScene extends Phaser.Scene {
                 characterName: this._player1.character.characterName,
                 textStyle: {
                     fontSize: '30px',
-                    fontFamily: 'Arial',
+                    fontFamily: 'Poppins',
                     color: '#fff'
                 }
             }
@@ -212,13 +212,8 @@ class FightScene extends Phaser.Scene {
             spriteOver: 'button_Over',
             spriteDown: 'button_Down',
             text: {
-                text: 'Attack',
-                style: {
-                    fontSize: '64px',
-                    fontFamily: 'Arial',
-                    color: '#fff',
-                    align: 'center'
-                },
+                text: 'ATTACK',
+                style: this._textStyle,
                 colorOver: '#fff',
                 colorDown: '#000'
             },
@@ -252,13 +247,8 @@ class FightScene extends Phaser.Scene {
                     y: 3
                 },
                 text: {
-                    text: 'Rematch',
-                    style: {
-                        fontSize: '64px',
-                        fontFamily: 'Arial',
-                        color: '#fff',
-                        align: 'center'
-                    },
+                    text: 'REMATCH',
+                    style: this._textStyle,
                     colorOver: '#fff',
                     colorDown: '#000'
                 },
@@ -276,13 +266,8 @@ class FightScene extends Phaser.Scene {
                     y: 3
                 },
                 text: {
-                    text: 'Character Select',
-                    style: {
-                        fontSize: '64px',
-                        fontFamily: 'Arial',
-                        color: '#fff',
-                        align: 'center'
-                    },
+                    text: 'CHARACTER SELECT',
+                    style: this._textStyle,
                     colorOver: '#fff',
                     colorDown: '#000'
                 },
@@ -301,13 +286,8 @@ class FightScene extends Phaser.Scene {
                     y: 3
                 },
                 text: {
-                    text: 'Return to Menu',
-                    style: {
-                        fontSize: '64px',
-                        fontFamily: 'Arial',
-                        color: '#fff',
-                        align: 'center'
-                    },
+                    text: 'RETURN TO MENU',
+                    style: this._textStyle,
                     colorOver: '#fff',
                     colorDown: '#000'
                 },

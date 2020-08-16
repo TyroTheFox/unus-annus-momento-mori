@@ -21,6 +21,13 @@ class MenuScene extends Phaser.Scene {
         this._stagePreview = null;
 
         this._skipToCharacterSelect = false;
+
+        this._textStyle = {
+            fontSize: '50px',
+            fontFamily: 'Poppins',
+            color: '#fff',
+            align: 'center'
+        }
     }
 
     init( data ) {
@@ -70,13 +77,8 @@ class MenuScene extends Phaser.Scene {
                 spriteOver: 'button_Over',
                 spriteDown: 'button_Down',
                 text: {
-                    text: "Back",
-                    style: {
-                        fontSize: '30px',
-                        fontFamily: 'Arial',
-                        color: '#fff',
-                        align: 'center'
-                    },
+                    text: "BACK",
+                    style: this._textStyle,
                     colorOver: '#fff',
                     colorDown: '#000'
                 },
@@ -125,13 +127,8 @@ class MenuScene extends Phaser.Scene {
                     y: 3
                 },
                 text: {
-                    text: 'Fight',
-                    style: {
-                        fontSize: '64px',
-                        fontFamily: 'Arial',
-                        color: '#fff',
-                        align: 'center'
-                    },
+                    text: 'FIGHT',
+                    style: this._textStyle,
                     colorOver: '#fff',
                     colorDown: '#000'
                 },
@@ -150,13 +147,8 @@ class MenuScene extends Phaser.Scene {
                     y: 3
                 },
                 text: {
-                    text: 'Options',
-                    style: {
-                        fontSize: '64px',
-                        fontFamily: 'Arial',
-                        color: '#fff',
-                        align: 'center'
-                    },
+                    text: 'OPTIONS',
+                    style: this._textStyle,
                     colorOver: '#fff',
                     colorDown: '#000'
                 },
@@ -205,12 +197,7 @@ class MenuScene extends Phaser.Scene {
                     },
                     text: {
                         text: character.name,
-                        style: {
-                            fontSize: '60px',
-                            fontFamily: 'Arial',
-                            color: '#fff',
-                            align: 'center'
-                        },
+                        style: this._textStyle,
                         colorOver: '#fff',
                         colorDown: '#000'
                     },
@@ -253,10 +240,10 @@ class MenuScene extends Phaser.Scene {
                     y: -50
                 },
                 text: {
-                    text: "Up",
+                    text: "UP",
                     style: {
                         fontSize: '30px',
-                        fontFamily: 'Arial',
+                        fontFamily: 'Poppins',
                         color: '#fff',
                         align: 'center'
                     },
@@ -277,10 +264,10 @@ class MenuScene extends Phaser.Scene {
                     y: 50
                 },
                 text: {
-                    text: "Down",
+                    text: "DOWN",
                     style: {
                         fontSize: '30px',
-                        fontFamily: 'Arial',
+                        fontFamily: 'Poppins',
                         color: '#fff',
                         align: 'center'
                     },
@@ -318,13 +305,8 @@ class MenuScene extends Phaser.Scene {
                     y: 3
                 },
                 text: {
-                    text: "Confirm Fighters",
-                    style: {
-                        fontSize: '60px',
-                        fontFamily: 'Arial',
-                        color: '#fff',
-                        align: 'center'
-                    },
+                    text: "CONFIRM FIGHTERS",
+                    style: this._textStyle,
                     colorOver: '#fff',
                     colorDown: '#000'
                 },
@@ -352,13 +334,8 @@ class MenuScene extends Phaser.Scene {
                     y: 3
                 },
                 text: {
-                    text: "Main Menu",
-                    style: {
-                        fontSize: '60px',
-                        fontFamily: 'Arial',
-                        color: '#fff',
-                        align: 'center'
-                    },
+                    text: "MAIN MENU",
+                    style: this._textStyle,
                     colorOver: '#fff',
                     colorDown: '#000'
                 },
@@ -409,12 +386,7 @@ class MenuScene extends Phaser.Scene {
                         },
                         text: {
                             text: stage.name,
-                            style: {
-                                fontSize: '60px',
-                                fontFamily: 'Arial',
-                                color: '#fff',
-                                align: 'center'
-                            },
+                            style: this._textStyle,
                             colorOver: '#fff',
                             colorDown: '#000'
                         },
@@ -448,10 +420,10 @@ class MenuScene extends Phaser.Scene {
                     y: -50
                 },
                 text: {
-                    text: "Up",
+                    text: "UP",
                     style: {
                         fontSize: '30px',
-                        fontFamily: 'Arial',
+                        fontFamily: 'Poppins',
                         color: '#fff',
                         align: 'center'
                     },
@@ -472,10 +444,10 @@ class MenuScene extends Phaser.Scene {
                     y: 50
                 },
                 text: {
-                    text: "Down",
+                    text: "DOWN",
                     style: {
                         fontSize: '30px',
-                        fontFamily: 'Arial',
+                        fontFamily: 'Poppins',
                         color: '#fff',
                         align: 'center'
                     },
