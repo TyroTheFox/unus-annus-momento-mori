@@ -25,6 +25,15 @@ export default class HealthBar {
             this._mask = this._scene.add.sprite( this._x, this._y, 'healthbar_bar' );
         }
 
+        if ( config.characterName && config.textStyle ) {
+            const offset = this._flip ? 200 : -200;
+            this._flip ? config.textStyle.align = 'left' : config.textStyle.align = 'right';
+            this._characterName = this._scene.add.text( this._x + offset, this._y, config.characterName, config.textStyle );
+            this._characterName.x -= ( this._characterName.displayWidth / 2 );
+            this._characterName.y += ( this._characterName.displayHeight / 2 );
+            this._characterName.originY = 0;
+        }
+
         this._redBarTween = {
             targets: this._redBarMask,
             delay: 700,
