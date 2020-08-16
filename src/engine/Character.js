@@ -18,6 +18,7 @@ export default class Character extends Phaser.GameObjects.Sprite {
         this.scene.add.existing( this );
 
         this._sfx = {};
+        this._sfxVolume = this._optionsData.sfxVolume;
 
         const soundsData = this.scene.game.cache.json.get( `sfx_${folderName}` );
 
@@ -101,6 +102,7 @@ export default class Character extends Phaser.GameObjects.Sprite {
                 if ( this._sfx.hasOwnProperty( key ) ) {
                     for (const sfxData of this._sfx[key] ) {
                         if ( sfxData.frame && sfxData.frame <= frame.index ) {
+                            sfxData.sound.setVolume( this._sfxVolume );
                             sfxData.sound.play();
                         }
                     }
@@ -113,6 +115,7 @@ export default class Character extends Phaser.GameObjects.Sprite {
         if ( this._sfx.hasOwnProperty( key ) ) {
             for (const sfxData of this._sfx[key] ) {
                 if ( sfxData.time ) {
+                    sfxData.sound.setVolume( this._sfxVolume );
                     this.scene.time.delayedCall( sfxData.time, () => { sfxData.sound.play() }, [], this);
                 }
             }
@@ -124,6 +127,7 @@ export default class Character extends Phaser.GameObjects.Sprite {
         if (key === '__GameOptionsData')
         {
             this._maxHP = data.HP;
+            this._sfxVolume = data.sfxVolume;
         }
     }
 }
