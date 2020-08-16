@@ -29,6 +29,10 @@ class MenuScene extends Phaser.Scene {
         } else {
             this._skipToCharacterSelect = false;
         }
+
+        if ( this._titleBackdrop ) {
+            this._titleBackdrop.playBGM( 500 );
+        }
     }
 
     preload() {

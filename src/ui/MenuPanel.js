@@ -99,13 +99,14 @@ export default class MenuPanel extends Phaser.GameObjects.Sprite {
             this._additionalList.push( config.additionalData || null );
         }
 
+        const that = this;
+
         newButton.off( 'pointerup' );
         newButton.on('pointerup', () => {
             newButton.enterButtonHoverState();
             if ( config.callback && this.visible ) {
-                const button = this._componentContainer.getAt( this._componentContainer.length - 2 );
                 const index = this._additionalList.length - 1 > 0 ? this._additionalList.length - 1 : 0;
-                config.callback( button, this._additionalList[index] || null );
+                config.callback.call( that, newButton, this._additionalList[index] || null );
             }
         }, this );
 
@@ -124,6 +125,8 @@ export default class MenuPanel extends Phaser.GameObjects.Sprite {
             const fullButtonListHeight = ( this._componentContainer.getAt( 0 ).displayHeight * ( this._componentContainer.length / 2 ) );
             this._componentContainer.y = ( centerPos.y - ( fullButtonListHeight / 2 ) ) + ( 10 * ( this._componentContainer.length / 2 ) );
         }
+
+        return newButton;
     }
 
     moveButtonContainerUp( offsetMod ) {

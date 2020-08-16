@@ -8,7 +8,11 @@ export default class Character extends Phaser.GameObjects.Sprite {
 
         this.anims.play( 'idle' );
 
-        this._maxHP = 5;
+        this.scene.registry.events.on('changedata', this._updateData, this);
+
+        this._optionsData = this.scene.registry.get( '__GameOptionsData' );
+
+        this._maxHP = this._optionsData.HP;
         this._damage = 0;
 
         this.scene.add.existing( this );
@@ -112,6 +116,14 @@ export default class Character extends Phaser.GameObjects.Sprite {
                     this.scene.time.delayedCall( sfxData.time, () => { sfxData.sound.play() }, [], this);
                 }
             }
+        }
+    }
+
+    _updateData(parent, key, data)
+    {
+        if (key === '__GameOptionsData')
+        {
+            this._maxHP = data.HP;
         }
     }
 }

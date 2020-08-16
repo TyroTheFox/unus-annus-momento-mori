@@ -25,7 +25,7 @@ export default class Button extends Phaser.GameObjects.Sprite {
                 this._buttonState = 'up';
                 this.enterButtonHoverState();
                 if ( config.callback && this.visible ) {
-                    config.callback( scene );
+                    config.callback.call( this, this.scene );
                 }
             });
 

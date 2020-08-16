@@ -96,6 +96,11 @@ export default class HealthBar {
         this._updateBar();
     }
 
+    setMaximumValue( value ) {
+        this._maximumValue = value;
+        this._updateBar();
+    }
+
     _updateBar() {
         if ( this._flip ) {
             this._mask.x = this._x + ( ( this._maximumValue - this._currentValue ) * this._stepWidth );
