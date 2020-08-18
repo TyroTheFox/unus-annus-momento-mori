@@ -17,14 +17,32 @@ export default class Button extends Phaser.GameObjects.Sprite {
 
         this._buttonState = 'idle';
 
+        this._downSound = this.scene.sound.add( '__buttonDown' );
+        this._upSound = this.scene.sound.add( '__buttonUp' );
+        this._hoverSound = this.scene.sound.add( '__buttonHover' );
+        this._hoverSound.loop = true;
+
         this.setInteractive({ useHandCursor: true })
-            .on('pointerover', () => this.enterButtonHoverState() )
-            .on('pointerout', () => this.enterButtonRestState() )
-            .on('pointerdown', () => this.enterButtonActiveState() )
+            .on('pointerover', () => {
+                this._hoverSound.play();
+                this.enterButtonHoverState()
+            } )
+            .on('pointerout', () => {
+                this._hoverSound.stop();
+                this.enterButtonRestState()
+            } )
+            .on('pointerdown', () => {
+                this._hoverSound.stop();
+                this._downSound.play();
+                this.enterButtonActiveState()
+            } )
             .on('pointerup', () => {
                 this._buttonState = 'up';
+                this._upSound.play();
+                this._downSound.stop();
                 this.enterButtonHoverState();
                 if ( config.callback && this.visible ) {
+                    this._downSound.stop();
                     config.callback.call( this, this.scene );
                 }
             });

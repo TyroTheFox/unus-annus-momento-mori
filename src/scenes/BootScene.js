@@ -65,7 +65,7 @@ class BootScene extends Phaser.Scene {
             HP: 5,
             damage: 1,
             crit: 5,
-            musicVolume: 0.75,
+            musicVolume: 0.25,
             sfxVolume: 1
         } );
 
