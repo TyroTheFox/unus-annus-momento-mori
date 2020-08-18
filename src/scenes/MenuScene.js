@@ -28,6 +28,16 @@ class MenuScene extends Phaser.Scene {
             color: '#fff',
             align: 'center'
         }
+
+        this._creditTexts = [
+            "BUILT BY TYRO THE FOX",
+            "ORIGINAL SOFTWARE: GENERIC PLATFORMER AND PHASER BOOTSTRAP PROJECT - NICKLAS BERG",
+            "MUSIC: UNUS ANNUS JAZZ REMIX - LESLIE WAI",
+            "VISIT EVERYPONY.COM FOR MORE FROM TYRO THE FOX"
+        ]
+
+        this._displayCredit = true;
+        this._creditIndex = 0;
     }
 
     init( data ) {
@@ -40,6 +50,7 @@ class MenuScene extends Phaser.Scene {
         if ( this._titleBackdrop ) {
             this._titleBackdrop.playBGM( 500 );
         }
+        this._displayCredit = true;
     }
 
     preload() {
@@ -136,6 +147,7 @@ class MenuScene extends Phaser.Scene {
                     this._mainMenu.setVisible( false );
                     this._characterMenu.setVisible( true );
                     this._backButton.setVisible( true );
+                    this._creditText.visible = false;
                 }
             }
         );
@@ -155,6 +167,7 @@ class MenuScene extends Phaser.Scene {
                 callback: () => {
                     this.scene.stop( 'OptionsScene' );
                     this.scene.start( 'OptionsScene' );
+                    this._creditText.visible = false;
                 }
             }
         );
@@ -460,6 +473,14 @@ class MenuScene extends Phaser.Scene {
         this._stageMenu.setVisible( false );
         // STAGE MENU
 
+        this._creditText = this.add.text( sw * 0.05, sh * 0.95, this._creditTexts[0], {
+            fontSize: '30px',
+            fontFamily: 'Poppins',
+            color: '#fff',
+            align: 'left',
+            backgroundColor: '#000'
+        } );
+
         if ( this._skipToCharacterSelect ) {
             this._setToCharacterSelect();
         } else {
@@ -495,6 +516,19 @@ class MenuScene extends Phaser.Scene {
                 this._stageMenu.moveButtonContainerDown( 10 );
             }
         }
+
+        if ( this._displayCredit ) {
+            this._displayCredit = false;
+            this.time.delayedCall( 3000, () => {
+                if ( this._creditIndex >= this._creditTexts.length ) {
+                    this._creditIndex = 0;
+                } else {
+                    this._creditIndex++;
+                }
+                this._creditText.setText( this._creditTexts[this._creditIndex] );
+                this._displayCredit = true;
+            }, [], this);
+        }
     }
 
     _reset() {
@@ -526,6 +560,7 @@ class MenuScene extends Phaser.Scene {
         this._player1 = null;
         this._player2 = null;
         this._chosenStage = null;
+        this._creditText.visible = true;
     }
 
     _setToCharacterSelect() {
