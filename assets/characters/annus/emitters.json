@@ -2,10 +2,6 @@
     {
         "name": "basic",
         "action": "attack",
-        "particles": {
-            "type": "texture",
-            "path": "basic.png"
-        },
         "config": {
             "speed": 200,
             "lifespan": 300,

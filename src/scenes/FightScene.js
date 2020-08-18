@@ -383,8 +383,8 @@ class FightScene extends Phaser.Scene {
             await Promise.all( [
                 context._die1.dieFailAnimation(),
                 context._die2.dieFailAnimation(),
-                context._player1.character.playAnimationPromise( 'attack' ),
-                context._player2.character.playAnimationPromise( 'attack' )
+                context._player1.character.playAnimationPromise( 'attack', true ),
+                context._player2.character.playAnimationPromise( 'attack', true )
             ] );
         }
 

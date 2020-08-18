@@ -31,25 +31,6 @@ export default class CharacterDataLoader {
                 animData.frames = this._game.anims.generateFrameNames(`${folderName}`, animation.frameConfig );
                 this._game.anims.create( animData );
             } );
-
-            const emitterData = this._game.cache.json.get( `emitter_${folderName}` );
-
-            emitterData.forEach( ( emitter ) => {
-                if ( emitter.particles.type === 'texture' ) {
-                    this._game.load.image(
-                        emitter.name,
-                        `../../${this._sourceDirectory}/${folderName}/emitter/${emitter.particles.path}`
-                    );
-                } else if ( emitter.particles.type === 'atlas') {
-                    this._game.load.atlas(
-                        emitter.name,
-                        `../../${this._sourceDirectory}/${folderName}/emitter/${emitter.particles.path}`,
-                        `../../${this._sourceDirectory}/${folderName}/emitter/${emitter.particles.json}`
-                    );
-                }
-
-
-            } );
         } );
     }
 }

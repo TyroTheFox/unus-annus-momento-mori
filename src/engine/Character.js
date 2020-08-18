@@ -89,8 +89,8 @@ export default class Character extends Phaser.GameObjects.Sprite {
         this._damage += value;
     }
 
-    playAnimationPromise( key ) {
-        this.playAnimation( key );
+    playAnimationPromise( key, emitterOverride = false ) {
+        this.playAnimation( key, emitterOverride );
         const that = this;
         return new Promise( ( fulfilled, rejected ) => {
             const eventName = `animationcomplete`;
@@ -106,7 +106,7 @@ export default class Character extends Phaser.GameObjects.Sprite {
         } );
     }
 
-    playAnimation( key ) {
+    playAnimation( key, emitterOverride = false ) {
         this.anims.play( key );
 
         this.setTimedSound( key );
@@ -126,12 +126,29 @@ export default class Character extends Phaser.GameObjects.Sprite {
                 if ( this._emitters.hasOwnProperty( key ) ) {
                     for ( const emitterData of this._emitters[key] ) {
                         if ( emitterData.frame && emitterData.frame <= frame.index ) {
-                            if ( emitterData.target ) {
-                                if ( emitterData.target === 'enemy' ) {
-                                    emitterData.emitter.startFollow( this.emitterTarget );
-                                } else if ( emitterData.target === 'self' ) {
-                                    emitterData.emitter.startFollow( this );
+                            let followTarget = this;
+                            let offsetX = 0;
+                            let offsetY = 0;
+                            if ( emitterOverride ) {
+                                const line = new Phaser.Geom.Line(
+                                    this.x, this.y,
+                                    this.emitterTarget.x, this.emitterTarget.y
+                                );
+                                const midPoint = Phaser.Geom.Line.GetMidPoint(line);
+                                emitterData.emitter.setPosition( midPoint.x, midPoint.y );
+                            } else {
+                                if ( emitterData.target ) {
+                                    if ( emitterData.target === 'enemy' ) {
+                                        followTarget = this.emitterTarget;
+                                    } else if ( emitterData.target === 'self' ) {
+                                        followTarget = this;
+                                    }
                                 }
+                                if ( emitterData.offset ) {
+                                    offsetX = emitterData.offset.x || 0;
+                                    offsetY = emitterData.offset.y || 0;
+                                }
+                                emitterData.emitter.startFollow( followTarget, offsetX, offsetY );
                             }
                             emitterData.emitter.start();
                             this.scene.time.delayedCall( emitterData.duration, () => {
