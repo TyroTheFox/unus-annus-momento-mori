@@ -1,5 +1,3 @@
-import * as characterData from '../../assets/characterManifest.json';
-
 export default class Character extends Phaser.GameObjects.Sprite {
     constructor( scene, x, y, characterName, folderName ) {
         super( scene, x, y, characterName );
@@ -20,13 +18,13 @@ export default class Character extends Phaser.GameObjects.Sprite {
         this._sfx = {};
         this._sfxVolume = this._optionsData.sfxVolume;
 
+        this._emitters = {};
+        this.emitterTarget = this;
+
         const soundsData = this.scene.game.cache.json.get( `sfx_${folderName}` );
 
         for ( const [ animKey, data ] of Object.entries( soundsData.timing ) ) {
             data.forEach( ( sfxData ) => {
-                // let sfx = this.scene.sound.sounds.find( baseSound => baseSound.key === sfxData.sfx );
-                // TODO Check for pre-existing sound object instead
-
                 let sfx = null;
 
                 if ( this._sfx.hasOwnProperty( animKey ) ) {
@@ -56,6 +54,23 @@ export default class Character extends Phaser.GameObjects.Sprite {
                 this._sfx[animKey].push( soundData );
             } );
         }
+
+        const emitterData = this.scene.game.cache.json.get( `emitter_${folderName}` );
+
+        for ( const data of emitterData ) {
+            const particles = this.scene.add.particles( data.name );
+            const emitter = particles.createEmitter( data.config );
+            emitter.stop();
+
+            if ( !this._emitters.hasOwnProperty( data.action ) ) {
+                this._emitters[data.action] = [];
+            }
+
+            this._emitters[data.action].push( {
+                emitter: emitter,
+                ...data
+            } );
+        }
     }
 
     get maxHP () {
@@ -74,8 +89,8 @@ export default class Character extends Phaser.GameObjects.Sprite {
         this._damage += value;
     }
 
-    playAnimationPromise( key ) {
-        this.playAnimation( key );
+    playAnimationPromise( key, emitterOverride = false ) {
+        this.playAnimation( key, emitterOverride );
         const that = this;
         return new Promise( ( fulfilled, rejected ) => {
             const eventName = `animationcomplete`;
@@ -91,7 +106,7 @@ export default class Character extends Phaser.GameObjects.Sprite {
         } );
     }
 
-    playAnimation( key ) {
+    playAnimation( key, emitterOverride = false ) {
         this.anims.play( key );
 
         this.setTimedSound( key );
@@ -107,6 +122,42 @@ export default class Character extends Phaser.GameObjects.Sprite {
                         }
                     }
                 }
+
+                if ( this._emitters.hasOwnProperty( key ) ) {
+                    for ( const emitterData of this._emitters[key] ) {
+                        if ( emitterData.frame && emitterData.frame <= frame.index ) {
+                            let followTarget = this;
+                            let offsetX = 0;
+                            let offsetY = 0;
+                            if ( emitterOverride ) {
+                                const line = new Phaser.Geom.Line(
+                                    this.x, this.y,
+                                    this.emitterTarget.x, this.emitterTarget.y
+                                );
+                                const midPoint = Phaser.Geom.Line.GetMidPoint(line);
+                                emitterData.emitter.setPosition( midPoint.x, midPoint.y );
+                            } else {
+                                if ( emitterData.target ) {
+                                    if ( emitterData.target === 'enemy' ) {
+                                        followTarget = this.emitterTarget;
+                                    } else if ( emitterData.target === 'self' ) {
+                                        followTarget = this;
+                                    }
+                                }
+                                if ( emitterData.offset ) {
+                                    offsetX = emitterData.offset.x || 0;
+                                    offsetY = emitterData.offset.y || 0;
+                                }
+                                emitterData.emitter.startFollow( followTarget, offsetX, offsetY );
+                            }
+                            emitterData.emitter.start();
+                            this.scene.time.delayedCall( emitterData.duration, () => {
+                                emitterData.emitter.stop();
+                                emitterData.emitter.stopFollow();
+                            }, [], this );
+                        }
+                    }
+                }
             }
         }, this );
     }
@@ -117,6 +168,27 @@ export default class Character extends Phaser.GameObjects.Sprite {
                 if ( sfxData.time ) {
                     sfxData.sound.setVolume( this._sfxVolume );
                     this.scene.time.delayedCall( sfxData.time, () => { sfxData.sound.play() }, [], this);
+                }
+            }
+        }
+
+        if ( this._emitters.hasOwnProperty( key ) ) {
+            for (const emitterData of this._emitters[key] ) {
+                if ( emitterData.time ) {
+                    if ( emitterData.target ) {
+                        if ( emitterData.target === 'enemy' ) {
+                            emitterData.emitter.startFollow( this.emitterTarget );
+                        } else if ( emitterData.target === 'self' ) {
+                            emitterData.emitter.startFollow( this );
+                        }
+                    }
+                    this.scene.time.delayedCall( emitterData.time, () => {
+                        emitterData.emitter.start();
+                        this.scene.time.delayedCall( emitterData.duration, () => {
+                            emitterData.emitter.stop();
+                            emitterData.emitter.stopFollow();
+                        }, [], this );
+                    }, [], this);
                 }
             }
         }

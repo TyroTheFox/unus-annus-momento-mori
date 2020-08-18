@@ -17,6 +17,7 @@ export default class CharacterDataLoader {
                 `../../${this._sourceDirectory}/${folderName}/atlas.json`);
             this._game.load.json( `animation_${folderName}`, `../../${this._sourceDirectory}/${folderName}/animation.json`);
             this._game.load.json( `sfx_${folderName}`, `../../${this._sourceDirectory}/${folderName}/sounds.json`);
+            this._game.load.json( `emitter_${folderName}`, `../../${this._sourceDirectory}/${folderName}/emitters.json`);
         } );
     }
 

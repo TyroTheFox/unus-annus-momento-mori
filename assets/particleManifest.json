@@ -1,0 +1,23 @@
+[
+    {
+        "name": "basic",
+        "particles": {
+            "type": "texture",
+            "path": "basic.png"
+        }
+    },
+    {
+        "name": "basic3",
+        "particles": {
+            "type": "texture",
+            "path": "basic.png"
+        }
+    },
+    {
+        "name": "basic2",
+        "particles": {
+            "type": "texture",
+            "path": "basic.png"
+        }
+    }
+]

@@ -1,6 +1,7 @@
 import WebFont from 'webfontloader';
 
 import * as soundsData from '../../assets/soundManifest.json';
+import * as particleData from '../../assets/particleManifest.json';
 
 import CharacterDataLoader from "../engine/CharacterDataLoader";
 import BackgroundDataLoader from "../engine/BackgroundDataLoader";
@@ -97,14 +98,13 @@ class BootScene extends Phaser.Scene {
         this.load.image('personIcon', 'assets/button/person.png');
         this.load.image('swordIcon', 'assets/button/sword.png');
 
-        this.anims.create( {
-            key: 'buttonFrames',
-            frames: [
-                { key: 'button_Idle' },
-                { key: 'button_Over' },
-                { key: 'button_Down' }
-            ],
-            frameRate: 10
+        particleData.default.forEach( ( emitter ) => {
+            if ( emitter.particles.type === 'texture' ) {
+                this.load.image( emitter.name, `assets/emitter/${emitter.particles.path}` );
+            } else if ( emitter.particles.type === 'atlas') {
+                this.load.atlas( emitter.name,
+                    `assets/emitter/${emitter.particles.path}`, `assets/emitter/${emitter.particles.json}`);
+            }
         } );
         // this.load.image('background-clouds', 'assets/images/clouds.png'); // 16-bit later
 
