@@ -33,6 +33,9 @@ class MenuScene extends Phaser.Scene {
             "BUILT BY TYRO THE FOX",
             "ORIGINAL SOFTWARE: GENERIC PLATFORMER AND PHASER BOOTSTRAP PROJECT - NICKLAS BERG",
             "MUSIC: UNUS ANNUS JAZZ REMIX - LESLIE WAI",
+            "MUSIC: SWINGJEDING - ROCCOW",
+            "LOGO ON RING FLOOR: U/RAZZLEFOX FROM UNUS ANNUS SUBREDDIT",
+            "BUILT IN PHASER 3",
             "VISIT EVERYPONY.COM FOR MORE FROM TYRO THE FOX"
         ]
 
@@ -89,7 +92,12 @@ class MenuScene extends Phaser.Scene {
                 spriteDown: 'button_Down',
                 text: {
                     text: "BACK",
-                    style: this._textStyle,
+                    style: {
+                        fontSize: '30px',
+                        fontFamily: 'Poppins',
+                        color: '#fff',
+                        align: 'center'
+                    },
                     colorOver: '#fff',
                     colorDown: '#000'
                 },
@@ -328,11 +336,13 @@ class MenuScene extends Phaser.Scene {
                     this.scene.start('FightScene', {
                         player1: {
                             name: this._player1.characterName,
-                            folderName: this._player1.folderName
+                            folderName: this._player1.folderName,
+                            config: this._player1.config || null
                         },
                         player2: {
                             name: this._player2.characterName,
-                            folderName: this._player2.folderName
+                            folderName: this._player2.folderName,
+                            config: this._player2.config || null
                         },
                         stage: this._chosenStage
                     } );
@@ -606,7 +616,7 @@ class MenuScene extends Phaser.Scene {
     }
 
     _getCharacterObject( characterData ) {
-        return new Character( this, 100, 100, characterData.name, characterData.folderName );
+        return new Character( this, 100, 100, characterData.name, characterData.folderName, characterData.config || null );
     }
 
     _getStageObject( stageData ) {

@@ -1,0 +1,13 @@
+{
+    "animData": {
+        "frameRate": 14,
+        "repeat": -1
+    },
+    "frameConfig": {
+        "prefix": "crowdmember/CrowdMember",
+        "suffix": ".png",
+        "zeroPad": 0,
+        "start": 1,
+        "end": 5
+    }
+}

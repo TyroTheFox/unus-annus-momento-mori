@@ -2,6 +2,11 @@ export default class Button extends Phaser.GameObjects.Sprite {
     constructor( scene, key, x, y, config ) {
         super( scene, x, y, key );
 
+        this.scene.registry.events.on('changedata', this._updateData, this);
+
+        this._optionsData = this.scene.registry.get( '__GameOptionsData' );
+        this._sfxVolume = this._optionsData.sfxVolume;
+
         if ( config.scale ) {
             this.setScale( config.scale.x || config.scale, config.scale.y || config.scale.x );
         }
@@ -18,8 +23,13 @@ export default class Button extends Phaser.GameObjects.Sprite {
         this._buttonState = 'idle';
 
         this._downSound = this.scene.sound.add( '__buttonDown' );
+        this._downSound.setVolume( this._sfxVolume );
+
         this._upSound = this.scene.sound.add( '__buttonUp' );
+        this._upSound.setVolume( this._sfxVolume );
+
         this._hoverSound = this.scene.sound.add( '__buttonHover' );
+        this._hoverSound.setVolume( this._sfxVolume );
         this._hoverSound.loop = true;
 
         this.setInteractive({ useHandCursor: true })
@@ -113,5 +123,13 @@ export default class Button extends Phaser.GameObjects.Sprite {
             this._text.setColor( this._textConfig.colorDown );
         }
         this.setTexture( this._downSprite );
+    }
+
+    _updateData(parent, key, data)
+    {
+        if (key === '__GameOptionsData')
+        {
+            this._sfxVolume = data.sfxVolume;
+        }
     }
 }

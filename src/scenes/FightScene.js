@@ -39,6 +39,14 @@ class FightScene extends Phaser.Scene {
             align: 'center'
         }
 
+        this._textWithBackgroundStyle = {
+            fontSize: '50px',
+            fontFamily: 'Poppins',
+            color: '#fff',
+            backgroundColor: '#000',
+            align: 'center'
+        }
+
         this._playingBackgroundMusic = false;
     }
 
@@ -108,9 +116,8 @@ class FightScene extends Phaser.Scene {
                     ease: 'Power2'
                 },
                 style: {
+                    ...this._textWithBackgroundStyle,
                     fontSize: '64px',
-                    fontFamily: 'Poppins',
-                    color: '#fff',
                     align: 'center'
                 }
             }
@@ -145,9 +152,8 @@ class FightScene extends Phaser.Scene {
                     ease: 'Power2'
                 },
                 style: {
+                    ...this._textWithBackgroundStyle,
                     fontSize: '64px',
-                    fontFamily: 'Poppins',
-                    color: '#fff',
                     align: 'center'
                 }
             }
@@ -155,8 +161,8 @@ class FightScene extends Phaser.Scene {
 
         const playerPostions = this._stage.playerPositions;
 
-        this._player1.character = this._getCharacterObject(  this._player1.data );
-        this._player2.character = this._getCharacterObject(  this._player2.data );
+        this._player1.character = this._getCharacterObject( this._player1.data );
+        this._player2.character = this._getCharacterObject( this._player2.data );
 
         this._player1.character.emitterTarget = this._player2.character;
         this._player2.character.emitterTarget = this._player1.character;
@@ -164,12 +170,35 @@ class FightScene extends Phaser.Scene {
         if ( playerPostions ) {
             this._player1.character.x = playerPostions[0].x;
             this._player1.character.y = playerPostions[0].y;
+
+            if ( this._player1.character.config && this._player1.character.config.stageOffset ) {
+                const offset = this._player1.character.config.stageOffset;
+
+                if ( playerPostions[1].flip ) {
+                    this._player1.character.x += offset.x || 0;
+                } else {
+                    this._player1.character.x -= offset.x || 0;
+                }
+                this._player1.character.y += offset.y || 0;
+            }
             if ( playerPostions[0].flip ) {
                 this._player1.character.setFlipX( playerPostions[0].flip );
             }
 
             this._player2.character.x = playerPostions[1].x;
             this._player2.character.y = playerPostions[1].y;
+
+            if ( this._player2.character.config && this._player2.character.config.stageOffset ) {
+                const offset = this._player2.character.config.stageOffset;
+
+                if ( playerPostions[1].flip ) {
+                    this._player2.character.x += offset.x || 0;
+                } else {
+                    this._player2.character.x -= offset.x || 0;
+                }
+                this._player2.character.y += offset.y || 0;
+            }
+
             if ( playerPostions[1].flip ) {
                 this._player2.character.setFlipX( playerPostions[1].flip );
             }
@@ -184,9 +213,8 @@ class FightScene extends Phaser.Scene {
                 scale: 0.5,
                 characterName: this._player1.character.characterName,
                 textStyle: {
-                    fontSize: '30px',
-                    fontFamily: 'Poppins',
-                    color: '#fff'
+                    ...this._textWithBackgroundStyle,
+                    fontSize: '30px'
                 }
             }
         );
@@ -200,9 +228,8 @@ class FightScene extends Phaser.Scene {
                 scale: 0.5,
                 characterName: this._player1.character.characterName,
                 textStyle: {
-                    fontSize: '30px',
-                    fontFamily: 'Poppins',
-                    color: '#fff'
+                    ...this._textWithBackgroundStyle,
+                    fontSize: '30px'
                 }
             }
         );
@@ -220,9 +247,9 @@ class FightScene extends Phaser.Scene {
                 colorOver: '#fff',
                 colorDown: '#000'
             },
-            callback: ( context ) => {
-                context._attackButton.setVisible( false );
-                context._playTurn( context );
+            callback: () => {
+                this._attackButton.setVisible( false );
+                this._playTurn();
             }
         } );
 
@@ -325,7 +352,7 @@ class FightScene extends Phaser.Scene {
     }
 
     _getCharacterObject( characterData ) {
-        return new Character( this, 100, 100, characterData.name, characterData.folderName );
+        return new Character( this, 100, 100, characterData.name, characterData.folderName, characterData.config || null );
     }
 
     _getStageObject( stageData ) {
@@ -336,80 +363,76 @@ class FightScene extends Phaser.Scene {
         return Math.floor((Math.random() * sides) + 1);
     }
 
-    async _playTurn( context ) {
+    async _playTurn() {
 
-        await context._die1.resetAfterDieFail();
-        await context._die2.resetAfterDieFail();
+        await this._die1.resetAfterDieFail();
+        await this._die2.resetAfterDieFail();
 
         // Roll d20 Dice
-        const player1Attack = context._makeDieRoll( 20 );
-        const player2Attack = context._makeDieRoll( 20 );
+        const player1Attack = this._makeDieRoll( 20 );
+        const player2Attack = this._makeDieRoll( 20 );
 
-        await context._die1.rollDieAnimation( player1Attack );
-        await context._die2.rollDieAnimation( player2Attack );
+        await this._die1.rollDieAnimation( player1Attack );
+        await this._die2.rollDieAnimation( player2Attack );
 
         // Comparing the rolls given
         if ( player1Attack > player2Attack ) {
             await Promise.all( [
-                context._die2.dieFailAnimation(),
-                context._player1.character.playAnimationPromise( 'attack' ),
-                context._player2.character.playAnimationPromise( 'damage' )
+                this._die2.dieFailAnimation(),
+                this._player1.character.playAnimationPromise( 'attack' ),
+                this._player2.character.playAnimationPromise( 'damage' )
             ] );
 
             let damage = 0;
             if ( player1Attack >= 20 ) {
-                damage = context._critDamage;
+                damage = this._critDamage;
             } else {
-                damage =  context._damagePower;
+                damage =  this._damagePower;
             }
 
-            context._player2.character.addDamage( damage );
+            this._player2.character.addDamage( damage );
         } else if ( player1Attack < player2Attack ) {
             await Promise.all( [
-                context._die1.dieFailAnimation(),
-                context._player2.character.playAnimationPromise( 'attack' ),
-                context._player1.character.playAnimationPromise( 'damage' )
+                this._die1.dieFailAnimation(),
+                this._player2.character.playAnimationPromise( 'attack' ),
+                this._player1.character.playAnimationPromise( 'damage' )
             ] );
 
             let damage = 0;
             if ( player2Attack >= 20 ) {
-                damage = context._critDamage;
+                damage = this._critDamage;
             } else {
-                damage =  context._damagePower;
+                damage =  this._damagePower;
             }
 
-            context._player1.character.addDamage( damage );
+            this._player1.character.addDamage( damage );
         } else {
             await Promise.all( [
-                context._die1.dieFailAnimation(),
-                context._die2.dieFailAnimation(),
-                context._player1.character.playAnimationPromise( 'attack', true ),
-                context._player2.character.playAnimationPromise( 'attack', true )
+                this._die1.dieFailAnimation(),
+                this._die2.dieFailAnimation(),
+                this._player1.character.playAnimationPromise( 'attack', true ),
+                this._player2.character.playAnimationPromise( 'attack', true )
             ] );
         }
 
         // Checks for player Death
-        if ( context._player1.character.HP === 0 ) {
-            await Promise.all( [
-                context._player1.character.playAnimationPromise( 'defeat' ),
-                context._player2.character.playAnimationPromise( 'victory' )
-            ] );
+        if ( this._player1.character.HP === 0 ) {
+            await this._player1.character.playAnimationPromise( 'defeat' );
+            await this._player2.character.playAnimationPromise( 'victory' );
         }
 
-        if ( context._player2.character.HP === 0 ) {
-            await Promise.all( [
-                context._player2.character.playAnimationPromise( 'defeat' ),
-                context._player1.character.playAnimationPromise( 'victory' )
-            ] );
+        if ( this._player2.character.HP === 0 ) {
+            await this._player2.character.playAnimationPromise( 'defeat' );
+            await this._player1.character.playAnimationPromise( 'victory' );
         }
 
         // If no players are dead, then reset for another round
-        if ( context._player1.character.HP > 0 && context._player2.character.HP > 0 ) {
+        if ( this._player1.character.HP > 0 && this._player2.character.HP > 0 ) {
             await Promise.all( [
-                context._player2.character.playAnimationPromise( 'idle' ),
-                context._player1.character.playAnimationPromise( 'idle' )
+                this._player2.character.playAnimationPromise( 'idle' ),
+                this._player1.character.playAnimationPromise( 'idle' )
             ] );
-            context._attackButton.setVisible( true );
+            this._attackButton.setVisible( true );
         } else {
             this._fightMenu.setVisible( true );
         }

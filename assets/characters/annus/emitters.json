@@ -1,13 +1,12 @@
 [
     {
-        "name": "basic",
+        "name": "black",
         "action": "attack",
         "config": {
-            "speed": 200,
-            "lifespan": 300,
-            "blendMode": "ADD"
+            "speed": 500,
+            "lifespan": 500
         },
-        "duration": 100,
+        "duration": 200,
         "frame": 1,
         "target": "enemy"
     }

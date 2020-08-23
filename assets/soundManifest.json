@@ -8,6 +8,10 @@
         "path": "jazzRemix.mp3"
     },
     {
+        "name": "swingjeding",
+        "path": "swingjeding.wav"
+    },
+    {
         "name": "__buttonHover",
         "path": "clockTicking.mp3"
     },

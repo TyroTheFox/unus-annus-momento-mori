@@ -1,0 +1,67 @@
+[
+    {
+        "animData": {
+            "key": "attack",
+            "frameRate": 12
+        },
+        "frameConfig": {
+            "prefix": "attack/attack-",
+            "suffix": ".png",
+            "zeroPad": 1,
+            "start": 0,
+            "end": 22
+        }
+    },
+    {
+        "animData": {
+            "key": "damage",
+            "frameRate": 12
+        },
+        "frameConfig": {
+            "prefix": "damage/damage-",
+            "suffix": ".png",
+            "zeroPad": 1,
+            "start": 0,
+            "end": 2
+        }
+    },
+    {
+        "animData": {
+            "key": "defeat",
+            "frameRate": 12
+        },
+        "frameConfig": {
+            "prefix": "defeat/defeat-",
+            "suffix": ".png",
+            "zeroPad": 1,
+            "start": 0,
+            "end": 18
+        }
+    },
+    {
+        "animData": {
+            "key": "idle",
+            "frameRate": 12
+        },
+        "frameConfig": {
+            "prefix": "idle/idle-",
+            "suffix": ".png",
+            "zeroPad": 1,
+            "start": 0,
+            "end": 0
+        }
+    },
+    {
+        "animData": {
+            "key": "victory",
+            "frameRate": 12
+        },
+        "frameConfig": {
+            "prefix": "victory/victory-",
+            "suffix": ".png",
+            "zeroPad": 1,
+            "start": 0,
+            "end": 17
+        }
+    }
+]

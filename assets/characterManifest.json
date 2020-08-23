@@ -1,6 +1,22 @@
 [
     {
         "name": "Annus",
-        "folderName": "annus"
+        "folderName": "annus",
+        "config": {
+            "scale": 3,
+            "stageOffset": {
+                "y": -100
+            }
+        }
+    },
+    {
+        "name": "Unus",
+        "folderName": "unus",
+        "config": {
+            "scale": 3,
+            "stageOffset": {
+                "y": -100
+            }
+        }
     }
 ]

@@ -1,0 +1,170 @@
+{
+	"textures": [
+		{
+			"image": "spritesheet.png",
+			"format": "RGBA8888",
+			"size": {
+				"w": 511,
+				"h": 709
+			},
+			"scale": 1,
+			"frames": [
+				{
+					"filename": "crowdmember/CrowdMember5.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 279,
+						"h": 279
+					},
+					"spriteSourceSize": {
+						"x": 12,
+						"y": 26,
+						"w": 249,
+						"h": 253
+					},
+					"frame": {
+						"x": 1,
+						"y": 1,
+						"w": 249,
+						"h": 253
+					},
+					"anchor": {
+						"x": 0.47670251,
+						"y": 0.95340502
+					}
+				},
+				{
+					"filename": "crowdmember/CrowdMember6.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 279,
+						"h": 279
+					},
+					"spriteSourceSize": {
+						"x": 31,
+						"y": 15,
+						"w": 219,
+						"h": 264
+					},
+					"frame": {
+						"x": 252,
+						"y": 1,
+						"w": 219,
+						"h": 264
+					},
+					"anchor": {
+						"x": 0.5,
+						"y": 1
+					}
+				},
+				{
+					"filename": "crowdmember/CrowdMember2.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 279,
+						"h": 279
+					},
+					"spriteSourceSize": {
+						"x": 15,
+						"y": 43,
+						"w": 242,
+						"h": 236
+					},
+					"frame": {
+						"x": 1,
+						"y": 256,
+						"w": 242,
+						"h": 236
+					},
+					"anchor": {
+						"x": 0.5,
+						"y": 1
+					}
+				},
+				{
+					"filename": "crowdmember/CrowdMember3.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 279,
+						"h": 279
+					},
+					"spriteSourceSize": {
+						"x": 11,
+						"y": 65,
+						"w": 252,
+						"h": 214
+					},
+					"frame": {
+						"x": 1,
+						"y": 494,
+						"w": 252,
+						"h": 214
+					},
+					"anchor": {
+						"x": 0.5,
+						"y": 1
+					}
+				},
+				{
+					"filename": "crowdmember/CrowdMember4.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 279,
+						"h": 279
+					},
+					"spriteSourceSize": {
+						"x": 1,
+						"y": 104,
+						"w": 265,
+						"h": 175
+					},
+					"frame": {
+						"x": 245,
+						"y": 267,
+						"w": 265,
+						"h": 175
+					},
+					"anchor": {
+						"x": 0.5,
+						"y": 1
+					}
+				},
+				{
+					"filename": "crowdmember/CrowdMember1.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 279,
+						"h": 279
+					},
+					"spriteSourceSize": {
+						"x": 33,
+						"y": 25,
+						"w": 206,
+						"h": 254
+					},
+					"frame": {
+						"x": 255,
+						"y": 444,
+						"w": 206,
+						"h": 254
+					},
+					"anchor": {
+						"x": 0.5,
+						"y": 1
+					}
+				}
+			]
+		}
+	],
+	"meta": {
+		"app": "https://www.codeandweb.com/texturepacker",
+		"version": "3.0",
+		"smartupdate": "$TexturePacker:SmartUpdate:33057a9ba0500d461f60ca9fab858448:04137cca613b812b633f5cf47d4e3095:f8f438b799cb53e0257e4a6a44974840$"
+	}
+}

@@ -7,17 +7,10 @@
         }
     },
     {
-        "name": "basic3",
+        "name": "black",
         "particles": {
             "type": "texture",
-            "path": "basic.png"
-        }
-    },
-    {
-        "name": "basic2",
-        "particles": {
-            "type": "texture",
-            "path": "basic.png"
+            "path": "black.png"
         }
     }
 ]

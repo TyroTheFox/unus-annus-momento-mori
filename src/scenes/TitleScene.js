@@ -11,25 +11,9 @@ class TitleScene extends Phaser.Scene {
 
         this._playingBackgroundMusic = false;
     }
-    preload() {
-        // this.load.atlas('mario-sprites', 'assets/mario-sprites.png', 'assets/mario-sprites.json');
-    }
+
     create() {
         this._titleBackdrop = new Stage( this, 'Spiral', 'spiral' );
-
-        // let config = {
-        //     key: 'title',
-        //     frames: [{
-        //         frame: 'title',
-        //         key: 'mario-sprites'
-        //     }]
-        // };
-        // this.anims.create(config);
-
-        // this.title = this.add.sprite(this.sys.game.config.width / 2, 16 * 5);
-        // this.title.play('title');
-        // this.attractMode = this.scene.launch('GameScene');
-        // console.log(this.attractMode.stop);
 
         this.scene.bringToTop();
 
@@ -81,23 +65,6 @@ class TitleScene extends Phaser.Scene {
                 }
             }
         );
-
-        // let ch = 0;
-        // let cw = 0;
-        // let multiplier = 1;
-        // if (sh / sw > 0.6) {
-        //     // Portrait, fit width
-        //     multiplier = sw / 400;
-        // } else {
-        //     multiplier = sh / 240;
-        // }
-        // multiplier = Math.floor(multiplier);
-        // let el = document.getElementsByTagName('canvas')[0];
-        // el.style.width = 400 * multiplier + 'px';
-        // el.style.height = 240 * multiplier + 'px';
-        //
-        // this.pressX = this.add.bitmapText(16 * 8 + 4, 8 * 16, 'font', 'PRESS X TO START', 8);
-        // this.blink = 1000;
     }
 
     update(time, delta) {
@@ -109,23 +76,13 @@ class TitleScene extends Phaser.Scene {
             this._titleBackdrop.playBGM();
             this._playingBackgroundMusic = true;
         }
-        // this.blink -= delta;
-        // if (this.blink < 0) {
-        //     this.pressX.alpha = this.pressX.alpha === 1 ? 0 : 1;
-        //     this.blink = 500;
-        // }
-
-        // if (!this.registry.get('attractMode')) {}
     }
 
     startGame() {
-        // this.scene.stop('MenuScene');
-        // this.registry.set('attractMode', false);
         this.scene.start('MenuScene');
     }
 
     restartScene() {
-        //        this.attractMode.stop();
         this.scene.stop('FightScene');
         this.scene.launch('FightScene');
         this.scene.bringToTop();

@@ -55,5 +55,153 @@
             }
         },
         "type": "stage"
+    },
+    {
+        "name": "Boxing Ring",
+        "folderName": "boxingring",
+        "playerPositions": [
+            {
+                "x": 400,
+                "y": 600,
+                "flip": true
+            },
+            {
+                "x": 1200,
+                "y": 600
+            }
+        ],
+        "components": [
+            {
+                "name": "background",
+                "position": "center",
+                "scale": 0.75,
+                "animated": false
+            },
+            {
+                "id": "row5",
+                "name": "crowdmember",
+                "position": "absolute",
+                "x": 100,
+                "y": 300,
+                "scale": 0.25,
+                "alpha": "0.1",
+                "animated": true,
+                "randomDelay": 200,
+                "repeat": {
+                    "count": 15,
+                    "offset": {
+                        "x": 100
+                    }
+                }
+            },
+            {
+                "id": "row4",
+                "name": "crowdmember",
+                "position": "absolute",
+                "x": 150,
+                "y": 350,
+                "scale": 0.25,
+                "alpha": "0.25",
+                "animated": true,
+                "randomDelay": 200,
+                "repeat": {
+                    "count": 14,
+                    "offset": {
+                        "x": 100
+                    }
+                }
+            },
+            {
+                "id": "row3",
+                "name": "crowdmember",
+                "position": "absolute",
+                "x": 100,
+                "y": 400,
+                "scale": 0.25,
+                "alpha": "0.5",
+                "animated": true,
+                "randomDelay": 200,
+                "repeat": {
+                    "count": 15,
+                    "offset": {
+                        "x": 100
+                    }
+                }
+            },
+            {
+                "id": "row2",
+                "name": "crowdmember",
+                "position": "absolute",
+                "x": 150,
+                "y": 450,
+                "scale": 0.25,
+                "alpha": "0.75",
+                "animated": true,
+                "randomDelay": 200,
+                "repeat": {
+                    "count": 14,
+                    "offset": {
+                        "x": 100
+                    }
+                }
+            },
+            {
+                "id": "row1",
+                "name": "crowdmember",
+                "position": "absolute",
+                "x": 100,
+                "y": 500,
+                "scale": 0.25,
+                "animated": true,
+                "randomDelay": 200,
+                "repeat": {
+                    "count": 15,
+                    "offset": {
+                        "x": 100
+                    }
+                }
+            },
+            {
+                "name": "ring",
+                "position": "center",
+                "scale": 0.75,
+                "animated": false
+            },
+            {
+                "name": "floodlight1",
+                "position": "center",
+                "scale": 0.75,
+                "animated": false
+            },
+            {
+                "name": "floodlight2",
+                "position": "center",
+                "scale": 0.75,
+                "animated": false
+            },
+            {
+                "name": "floodlightray1",
+                "position": "absolute",
+                "x": "center",
+                "y": "center",
+                "scale": 0.75,
+                "animated": false
+            },
+            {
+                "name": "floodlightray2",
+                "position": "absolute",
+                "x": "center",
+                "y": "center",
+                "scale": 0.75,
+                "animated": false
+            }
+        ],
+        "bgm": {
+            "name": "swingjeding",
+            "config": {
+                "loop": true
+            }
+        },
+        "type": "stage"
     }
 ]

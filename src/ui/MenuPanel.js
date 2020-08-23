@@ -35,7 +35,6 @@ export default class MenuPanel extends Phaser.GameObjects.Sprite {
         this._controlButtonsList = [];
         this._textList = [];
         this._controlTextList = [];
-        this._additionalList = [];
 
         if ( config.mask ) {
             const maskShape = this.scene.make.graphics();
@@ -95,18 +94,13 @@ export default class MenuPanel extends Phaser.GameObjects.Sprite {
         this._componentContainer.add( newButton );
         this._componentContainer.add( newButton.text || null );
 
-        if ( config.additionalData ) {
-            this._additionalList.push( config.additionalData || null );
-        }
-
         const that = this;
 
         newButton.off( 'pointerup' );
         newButton.on('pointerup', () => {
             newButton.enterButtonHoverState();
             if ( config.callback && this.visible ) {
-                const index = this._additionalList.length - 1 > 0 ? this._additionalList.length - 1 : 0;
-                config.callback.call( that, newButton, this._additionalList[index] || null );
+                config.callback.call( that, newButton, config.additionalData || null );
             }
         }, this );
 
@@ -192,21 +186,15 @@ export default class MenuPanel extends Phaser.GameObjects.Sprite {
         this._controlsContainer.add( newButton );
         this._controlsContainer.add( newButton.text || null );
 
-        if ( config.additionalData ) {
-            this._additionalList.push( config.additionalData || null );
-        }
-
         const eventName = config.eventName || 'pointerup';
 
         newButton.off( eventName );
         newButton.on( eventName, () => {
             newButton.enterButtonHoverState();
             if ( config.callback && this.visible ) {
-                const button = this._controlsContainer.getAt( this._controlsContainer.length - 2 );
-                const index = this._additionalList.length - 1 > 0 ? this._additionalList.length - 1 : 0;
-                config.callback( this, button, this._additionalList[index] || null );
+                config.callback.call( this, newButton, config.additionalData || null );
             }
-        }, this );
+        } );
 
         return newButton;
     }

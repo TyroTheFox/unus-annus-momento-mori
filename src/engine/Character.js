@@ -1,10 +1,11 @@
 export default class Character extends Phaser.GameObjects.Sprite {
-    constructor( scene, x, y, characterName, folderName ) {
+    constructor( scene, x, y, characterName, folderName, config = null ) {
         super( scene, x, y, characterName );
         this.characterName = characterName;
         this.folderName = folderName;
+        this.config = config;
 
-        this.anims.play( 'idle' );
+        this.anims.play( `idle-${this.folderName}` );
 
         this.scene.registry.events.on('changedata', this._updateData, this);
 
@@ -59,6 +60,8 @@ export default class Character extends Phaser.GameObjects.Sprite {
 
         for ( const data of emitterData ) {
             const particles = this.scene.add.particles( data.name );
+            particles.setDepth( 10 );
+
             const emitter = particles.createEmitter( data.config );
             emitter.stop();
 
@@ -70,6 +73,24 @@ export default class Character extends Phaser.GameObjects.Sprite {
                 emitter: emitter,
                 ...data
             } );
+        }
+
+        if ( this.config ) {
+            if ( this.config.scale ) {
+                this.setScale( this.config.scale );
+            }
+
+            if ( this.config.alpha ) {
+                this.alpha = this.config.alpha;
+            }
+
+            if ( this.config.anchor ) {
+                this.setOrigin( this.config.anchor.x, this.config.anchor.y );
+            }
+
+            if ( this.config.blendMode ) {
+                this.setBlendMode( Phaser.BlendModes[this.config.blendMode] );
+            }
         }
     }
 
@@ -97,7 +118,7 @@ export default class Character extends Phaser.GameObjects.Sprite {
             that.once(
                 eventName,
                 ( animation, frame ) => {
-                    if ( animation.key === key ) {
+                    if ( animation.key === `${key}-${this.folderName}` ) {
                         fulfilled();
                     }
                 },
@@ -107,13 +128,14 @@ export default class Character extends Phaser.GameObjects.Sprite {
     }
 
     playAnimation( key, emitterOverride = false ) {
-        this.anims.play( key );
+        this.anims.play( `${key}-${this.folderName}` );
 
         this.setTimedSound( key );
 
         const eventName = `animationupdate`;
+
         this.once( eventName, ( animation, frame ) => {
-            if ( animation.key === key ) {
+            if ( animation.key === `${key}-${this.folderName}` ) {
                 if ( this._sfx.hasOwnProperty( key ) ) {
                     for (const sfxData of this._sfx[key] ) {
                         if ( sfxData.frame && sfxData.frame <= frame.index ) {
@@ -129,6 +151,7 @@ export default class Character extends Phaser.GameObjects.Sprite {
                             let followTarget = this;
                             let offsetX = 0;
                             let offsetY = 0;
+
                             if ( emitterOverride ) {
                                 const line = new Phaser.Geom.Line(
                                     this.x, this.y,

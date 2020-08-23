@@ -1,0 +1,16 @@
+{
+    "timing": {
+        "attack": [
+            {
+                "sfx": "test",
+                "frame": 1
+            }
+        ],
+        "damage": [
+            {
+                "sfx": "test",
+                "frame": 1
+            }
+        ]
+    }
+}

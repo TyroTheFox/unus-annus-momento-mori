@@ -1,5 +1,3 @@
-import Character from "../engine/Character";
-import * as characterData from '../../assets/characterManifest.json';
 import MenuPanel from '../ui/MenuPanel';
 import Stage from '../engine/Stage';
 import Button from '../ui/Button';
@@ -49,10 +47,10 @@ class OptionsScene extends Phaser.Scene {
                 spriteOver: 'button_Over',
                 spriteDown: 'button_Down',
                 text: {
-                    text: "Back",
+                    text: "BACK",
                     style: {
                         fontSize: '30px',
-                        fontFamily: 'Arial',
+                        fontFamily: 'Poppins',
                         color: '#fff',
                         align: 'center'
                     },

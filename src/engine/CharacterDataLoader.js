@@ -29,6 +29,7 @@ export default class CharacterDataLoader {
             animationData.forEach( ( animation ) => {
                 const animData = animation.animData;
                 animData.frames = this._game.anims.generateFrameNames(`${folderName}`, animation.frameConfig );
+                animData.key += `-${folderName}`;
                 this._game.anims.create( animData );
             } );
         } );
