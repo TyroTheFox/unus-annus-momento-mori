@@ -53,7 +53,7 @@ export default class Button extends Phaser.GameObjects.Sprite {
                 this.enterButtonHoverState();
                 if ( config.callback && this.visible ) {
                     this._downSound.stop();
-                    config.callback.call( this, this.scene );
+                    config.callback.call( this, this );
                 }
             });
 

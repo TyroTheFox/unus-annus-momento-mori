@@ -48,6 +48,9 @@ class FightScene extends Phaser.Scene {
         }
 
         this._playingBackgroundMusic = false;
+
+        this._paused = false;
+        this._buttonLock = false;
     }
 
     init( data ) {
@@ -334,6 +337,9 @@ class FightScene extends Phaser.Scene {
 
         this._player1.character.playAnimation( 'idle' );
         this._player2.character.playAnimation( 'idle' );
+
+        this._pauseKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
+        this._attackKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
     }
 
     update(time, delta) {
@@ -348,6 +354,29 @@ class FightScene extends Phaser.Scene {
 
         if ( this._player2.character.HP !== this._player2.healthBar.currentValue ) {
             this._player2.healthBar.setValue( this._player2.character.HP );
+        }
+
+        if ( this._pauseKey.isDown && !this._buttonLock ) {
+            this._buttonLock = true;
+
+            if ( this._paused ) {
+                this._paused = false;
+                this._fightMenu.setVisible( false );
+                this._attackButton.setVisible( true );
+            } else {
+                this._paused = true;
+                this._fightMenu.setVisible( true );
+                this._attackButton.setVisible( false );
+            }
+        }
+
+        if ( this._pauseKey.isUp ) {
+            this._buttonLock = false;
+        }
+
+        if ( this._attackKey.isDown && this._attackButton.visible ) {
+            this._attackButton.setVisible( false );
+            this._playTurn();
         }
     }
 
