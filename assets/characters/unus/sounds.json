@@ -2,13 +2,13 @@
     "timing": {
         "attack": [
             {
-                "sfx": "test",
+                "sfx": "attack2",
                 "frame": 1
             }
         ],
-        "damage": [
+        "defeat": [
             {
-                "sfx": "test",
+                "sfx": "defeat1",
                 "frame": 1
             }
         ]
