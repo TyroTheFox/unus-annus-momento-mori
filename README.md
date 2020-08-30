@@ -1,112 +1,145 @@
-# Generic Platformer and Phaser Bootstrap Project
-#### Phaser 3 + ES6 + Webpack
+# UNUS ANNUS: MOMENTO MORI
+#### Web Based Game
+##### Built in Phaser
+###### Built by Tyro The Fox
 
-This repository started as a sandbox for testing out Phaser 3 while it was in Beta bundeled with a few examples. These examples are now removed and replaced with a generic platformer project that explores Phaser 3 API. With the example project removed this is still a good boiler plate to start with. The aim of the platformer is not to relase a game but to try stuff out and to share something for others to learn from. I usually think the best way to learn is to read and manipulate source code. A quick disclaimer though, even if my aim is to identify best practices that's far from where the source code is today. I don't use pools. I do define at least one global function. Etc etc.
+This is a very simple game project that you can add new characters to (hopefully) very simply by manipulating the data files to lead to your assets.
 
-![Running example](https://github.com/nkholski/phaser3-es6-webpack/raw/master/rawAssets/smb-phaser3.gif)
+## Gameplay
 
-**Live demo:** http://metroid.niklasberg.se/phaser3platformer/
+Very simple, based on the Episode of Unus Annus where Mark and Ethan run a game of Celebrity Boxing. Two characters roll dice, the higher die result deals damage to the other.
 
-The boiler plate code is based on the excellent Bootstrap project for Phaser 2 "Phaser + ES6 + Webpack" (https://github.com/lean/phaser-es6-webpack), which was based on https://github.com/belohlavek/phaser-es6-boilerplate and https://github.com/cstuncsik/phaser-es6-demo. Most of this project is an exact copy of that repository, only with the Phaser package updated to Phaser 3 and the example replaced with one based on Phaser 3. If (or when) Lean releases a Phaser 3 version of their own I'll probably shift to use that and focus on the generic platformer.
+## Set Up
 
-**Disclaimer**: The generic platformer isn't an attempt to recreate any copyrighted game, and it will not become a playable game. You get nothing out of this besides learning about Phaser 3.
+Have a version of Node Installed:
 
-# Contribute
-Please any submit issues you have, including proposals. Ask me before preparing a PR or your PR might be rejected if in conflict with other ideas and planned way to do stuff. This would be great:
-- Feedback on best practises and why I'm being stupid
-- Extend the sprites texture atlas from the spritesheets I still use so I can dump them
+**Download Link:** https://nodejs.org/en/download/
 
-# Parts of API used:
-A messy list of things I used from the Phaser API. I'll try to improve this, but it gives a hint of what you might expect to find in the source code to read bring to your own projects.
+Once done, double click 'Install.bat' to run first time set up. Once complete, double click 'Run.bat' to start the game. Your browser should start up.
+ 
+# Adding Your Own Stuff
+The Game is built to be relatively simple to add in your own content. There's a few methods of doing this but we'll mainly cover the easiest, which is adding in a sprite atlas with accompanying data.
 
-**Preloader**
-- image, tilemapTiledJSON, spritesheet, atlas, audio, audiosprite, bitmapFont, plugin
+## Recommended Stuff to Have
+Because we're working with Phaser, it's recommended to use TexturePacker if you can as it will make the process much smoother. 
 
-**Input**
-- Phaser.Input.Keyboard
-- Touch controls
+It's also useful to have the Phaser Docs to look through as some config data comes from there. 
 
-**Audio**
-- Audioatlas (including some event listeners)
-- Music (pause/resume/rate)
+Lastly, a sprite animating tool like 'PixelMash' (https://nevercenter.com/pixelmash/) or 'Piskel' (https://www.piskelapp.com/) can make the asset making process much easier.
 
-**Animations**
-- Animating sprites
+# Make a Character
+## Step 1: Make Assets
+Create animation frames for the following actions, because the game is looking for these.
 
-**Tilemaps**
-- Multiple layers
-- Dynamic layers
-- Animated tiles (Plugin: https://github.com/nkholski/phaser-animated-tiles)
-- Object layers are used to manipulate the map, define areas and add enemies. 
+- Idle (Standing Around)
+- Attack (Throwing a punch or whatever)
+- Damage (Taking a hit)
+- Defeat (An animation to play upon being taken down)
+- Victory (An animation to play upon winning the bout)
 
-**Tilesprite**
-- Background clouds
+Once you have these animations sorted, you'll now need to arrange them so that they make sense to the game.
 
-**Sprites**
-- All sprites are ES6 extensions of native Phaser.Sprite
+## Step 2: Sorting Frames, Assets and Handling Data
+In the assets folder, make a new folder in the characters folder. You ought to follow the example characters included with the game. You'll want to name the folder to something unique so you can point to it later.
 
-**Physics**
-- Acceleration
-- body sizes
-- pause
-- collisions and overlap sprite/sprite and sprite/tilemaplayer
+Inside there, you'll want: 
 
-**Groups**
-- Sprites are put in groups
+- animation.json
+- emitters.json
+- sounds.json
 
-**BitmapText**
-- For score and timer
+These we will configure in a moment. Depending on how you want to import your assets, you'll need to add your assets to the file, renaming the file to suit the import method. 
 
-**Tweens**
-- entering pipes, ending the world etc.
+### Importing an Atlas
+- Your image file must be called a 'spritesheet' (png format only)
+- The data file must be called 'atlas.json'
 
-# Thanks to
-- The Phaser team @photonstorm, @mikewesthad and @pavle-goloskokovic for building Phaser 3 in general and for assisting while building this.
-- @AleBles - Updated webpack-stuff when the project was stalled at Beta 19.
+(This format is the nicest to work with and is exactly what gets pumped out by TexturePacker in Phaser 3 mode. It is possible to make the 'atlas.json' yourself. Good luck on that though.)
 
-# Setup
-You’ll need to install a few things before you have a working copy of the project.
+## Importing by Frames
+(The 'unusFrames' folder is a good example of this)
+- You can put each of your frames for each animation into each folder or just dump them all in. I'd do the former as you'll have to link all of these yourself but you do you, you crazy nutzoidate
 
-## 1. Clone this repo:
+## Importing by Spritesheet
+- Add in your spritesheet image and rename to 'spritesheet.png'
+- This'll be configured elsewhere
 
-Navigate into your workspace directory.
+## Importing by Unity Atlas (Not Tested)
+- Change the image to 'spritesheet.png'
+- Change the meta file to 'atlas.meta'
 
-Run:
+That should be sorted for the frames. Other assets can be put in other places. 
 
-```git clone https://github.com/nkholski/phaser3-es6-webpack.git```
+- Custom sounds are put in 'audio'
+- Custom particles for emitter effects are in 'emitter'
 
-## 2. Install node.js and npm:
+## Step 3: Configuring The Character
+First, you'll need to make sure that the Animation are pointing at the right thing. Use the already example characters for a good idea of how this data should look but you need 5 objects that contain an animData bit and a frameData bit.
 
-https://nodejs.org/en/
+- animData: This is Phaser data for the animation. Here you need to set a key which is a lowercase version of the action your setting up ("attack", "damage", "idle" and so on).
+- frameData: This is for atlas or spritesheet data which tells the game how to divide up your sprite image into frames
+- frames: If you have only individual frames, then here is where you tell the game what frames line up with which animation by listing the frame names associated with each game action
 
+Do this for all five animations in the game to make a new character
 
-## 3. Install dependencies (optionally you could install [yarn](https://yarnpkg.com/)):
+You'll also need to tell the game all about your new character. You do this in the 'characterManifest.json' file. Use the characters already in there as a guide
 
-Navigate to the cloned repo’s directory.
+- You'll need to tell the Game what to display your character's name as with 'name'
+- You'll need to tell the Game where all your frame assets are by giving the game the name of the folder you put everything in, under 'folderName'
+- The 'importMethod' element is important for explaining how to import a character's frames (atlas, frames, unity, spritesheet)
+- If you have individual frames, then you'll need to tell the game about each frame by adding to a 'frames' element in a way similar to the 'Unus (Frames)' example: each frame needs a key and the path relative to the asset folder for the character.
 
-Run:
+After this, you can configure your character a little. You can scale the character assets and you can also add an offset.
 
-```npm install```
+Other things to configure is the 'sounds.json' file, where you link sounds to your actions. Look to the existing characters for an idea of how this works.
 
-or if you choose yarn, just run ```yarn```
+- You need to specify which action the sound is for ("attack", "damage", "idle" and so on)
+- You can have multiple sounds on the same action by adding multiple sound entires to the action
+- You must also specify when the sound fires. You can set it by animation frame or by 'time' (which is a delay from the moment the animation starts playing)
 
-## 4. Run the development server:
+Emitters work in a similar way, except they need to know what particle they use and a little details on how the emitter functions
 
-Run:
+- 'name' needs to link to the name you've given to your custom particle in the emitter folder
+- 'action' specifies an action
+- 'config' is the options for the emitter
+- 'duration' is how long the emitter lasts for
+- 'frame' or 'time' for when the emitter fires
+- 'target' talks about whether the emitter should happen above your character or the opponent when it fires ('self' or 'enemy')
 
-```npm run dev```
+Once done, that should be it. Boot up the game, test it out and try to deal with any errors you find. Make sure to use F12 menus to look at errors, it's very possible your character hasn't loaded their frames properly and you'll need to double check where it all went wrong.
 
-This will run a server so you can run the game in a browser.
+# Make a Stage
+## Step 1: Make all the Assets
+Mostly the same as making a character, the difference is that Stages can be made up of lots of different animated and static elements that all layer on top of each other. Use the examples in the backgrounds folder to have a better idea how they fit together
 
-Open your browser and enter localhost:3000 into the address bar.
+## Step 2: Sorting The Assets Out
+Each element of your stage needs its own folder. So, for example, the boxing ring Stage has a ring and floodlights. They're all elements that sit on top of each other so have their own folder with its respective sprite in it
 
-Also this will start a watch process, so you can change the source and the process will recompile and refresh the browser.
+- A single sprite needs only a png called 'sprite.json'
+- An animated element, you need an animation.json file which interacts with how you are pulling in your frames, which is done similar to character frames. You can look at the crowdmember element of the boxing ring stage for a good example of what this looks like.
 
+## Step 3: Configuring The Stage
+In the backgroundManifest.json, you can sort out how the game reads in and handles a Stage. There's two types you can make here: 'backgrounds' and 'stage' in the 'type' element for most entries. The stages you play on have 'stage' in that.
 
-## Build for deployment:
+Here, we'll sort out each entry:
 
-Run:
+- 'name' is the display name for the Stage
+- 'folderName' is the name of the folder where all the sprites are for your stage
+- 'playerPositions' is where you set up the x/y values for your characters in the stage. Adding a 'flip' value to make the charater face the opposite direction.
+- 'components' is where you add every single component you have
+    - 'name' is the name of the folder for the element of the stage
+    - 'importMethod' like the character version tells the game how to handle your assets
+    - 'position' can be 'center' or 'absolute', where you can specify and x and y value
+    - 'scale' changes the size of the assets
+    - 'animated' tells the game whether this element can be played or not
+- 'bgm' is the background music. 
+    - 'name' is the name of the music in the audio folder
+    - 'config' are the options for this music
+    
+That ought to work. Hopefully it does for you!
 
-```npm run deploy```
+From there, you ought to be able to make new characters and stages to mess around with. If Phaser 3 can do it, you ought to be able to.
 
-This will optimize and minimize the compiled bundle.
+Or, use this as a basis for something more impressive and go nuts. I look forward to it!
+
+Thanks for reading, I hope this is useful and interesting for you to mess with. 

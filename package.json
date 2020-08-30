@@ -6,6 +6,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "webpack --mode=development",
+    "run": "webpack --mode=production",
     "deploy": "webpack  --mode=production --config webpack.production.config.js",
     "test": "eslint ./src/**/**.js",
     "doc": "jsdoc -d docs --configure jsconf.json src --debug --verbose"

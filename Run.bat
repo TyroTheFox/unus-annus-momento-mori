@@ -1,0 +1,1 @@
+npm run run --scripts-prepend-node-path=auto
