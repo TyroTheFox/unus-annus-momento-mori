@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: ui/Button.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: ui/Button.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * @typedef {Object} Button#TextConfig
+ * @property {string} text - Text to display
+ * @property {Phaser.GameObjects.TextStyle} style - Text Style object
+ * @property {color} colorOver - The colour the text turns when the mouse is over the button
+ * @property {color} colorDown - The colour the text turns when the button is clicked
+ */
+
+/**
+ * @typedef {Object} Button#Config
+ * @property {number|Object} [scale] - Scale values for the character sprites
+ * @property {number} [scale.x] - X Scale value
+ * @property {number} [scale.y] - Y Scale value
+ * @property {string} spriteOver - Name the over sprite is cached over
+ * @property {string} spriteDown - Name the over sprite is cached over
+ * @property {Button#TextConfig} text - Configuration for the text attached
+ * @property {function} callback - A callback function for the button to fire when clicked
+ */
+
+/**
+ * A button object
+ * @class Button
+ * @extends Phaser.GameObjects.Sprite
+ */
+export default class Button extends Phaser.GameObjects.Sprite {
+    /**
+     * @constructor
+     * @param {Phaser.Scene} scene - Scene Context
+     * @param {string} key - Name to cache the object under
+     * @param {number} x - X Co-ord
+     * @param {number} y - y Co-ord
+     * @param {Button#Config} config - Configuration object for the button
+     */
+    constructor( scene, key, x, y, config ) {
+        super( scene, x, y, key );
+
+        this.scene.registry.events.on('changedata', this._updateData, this);
+
+        this._optionsData = this.scene.registry.get( '__GameOptionsData' );
+        this._sfxVolume = this._optionsData.sfxVolume;
+
+        if ( config.scale ) {
+            this.setScale( config.scale.x || config.scale, config.scale.y || config.scale.x );
+        }
+
+        this._idleTexture = key;
+
+        if ( config.spriteOver ) {
+            /** @type {string} */
+            this._overSprite = config.spriteOver;
+        }
+        if ( config.spriteDown ) {
+            /** @type {string} */
+            this._downSprite = config.spriteDown;
+        }
+
+        /** @type {string} */
+        this._buttonState = 'idle';
+
+        /** @type {Phaser.Sound.BaseSound} */
+        this._downSound = this.scene.sound.add( '__buttonDown' );
+        this._downSound.setVolume( this._sfxVolume );
+
+        /** @type {Phaser.Sound.BaseSound} */
+        this._upSound = this.scene.sound.add( '__buttonUp' );
+        this._upSound.setVolume( this._sfxVolume );
+
+        /** @type {Phaser.Sound.BaseSound} */
+        this._hoverSound = this.scene.sound.add( '__buttonHover' );
+        this._hoverSound.setVolume( this._sfxVolume );
+        this._hoverSound.loop = true;
+
+        this.setInteractive({ useHandCursor: true })
+            .on('pointerover', () => {
+                this._hoverSound.play();
+                this.enterButtonHoverState()
+            } )
+            .on('pointerout', () => {
+                this._hoverSound.stop();
+                this.enterButtonRestState()
+            } )
+            .on('pointerdown', () => {
+                this._hoverSound.stop();
+                this._downSound.play();
+                this.enterButtonActiveState()
+            } )
+            .on('pointerup', () => {
+                this._buttonState = 'up';
+                this._upSound.play();
+                this._downSound.stop();
+                this.enterButtonHoverState();
+                if ( config.callback &amp;&amp; this.visible ) {
+                    this._downSound.stop();
+                    config.callback.call( this, this );
+                }
+            });
+
+        this.scene.add.existing( this );
+
+        if ( config.text ) {
+            const centerPos = this.getCenter();
+
+            /** @type {Phaser.GameObjects.Text} */
+            this._text = this.scene.add.text( centerPos.x, centerPos.y, config.text.text, config.text.style );
+            this._text.x -= ( this._text.displayWidth / 2 );
+            this._text.y -= ( this._text.displayHeight / 2 );
+            /** @type {Button#TextConfig} */
+            this._textConfig = config.text;
+        }
+    }
+
+    get state() {
+        return this._buttonState;
+    }
+
+    set xPos( x ) {
+        this.x = x;
+        if ( this._text ) {
+            const centerPos = this.getCenter();
+            this._text.x = centerPos.x - ( this._text.displayWidth / 2 );
+        }
+    }
+
+    set yPos( y ) {
+        this.y = y;
+        if ( this._text ) {
+            const centerPos = this.getCenter();
+            this._text.y = centerPos.y - ( this._text.displayHeight / 2 );
+        }
+    }
+
+    get text() {
+        return this._text;
+    }
+
+    /**
+     * Sets the visible of the whole button
+     * @param {boolean} v - Visible or not
+     */
+    setVisible( v ) {
+        this.visible = v;
+        if ( this._text ) {
+            this._text.visible = v;
+        }
+    }
+
+    /**
+     * Called when the mouse enters the hover state
+     */
+    enterButtonHoverState() {
+        this._buttonState = 'over';
+        if ( this._textConfig &amp;&amp; this._textConfig.colorOver ) {
+            this._text.setColor( this._textConfig.colorOver );
+        }
+        if ( this._overSprite ) {
+            this.setTexture( this._overSprite );
+        }
+    }
+
+    /**
+     * Called when the mouse click completes
+     */
+    enterButtonRestState() {
+        this._buttonState = 'idle';
+        if ( this._textConfig ) {
+            this._text.setColor( this._textConfig.style.color );
+        }
+        this.setTexture( this._idleTexture );
+    }
+
+    /**
+     * Called when the mouse click is down
+     */
+    enterButtonActiveState() {
+        this._buttonState = 'down';
+        if ( this._textConfig &amp;&amp; this._textConfig.colorDown ) {
+            this._text.setColor( this._textConfig.colorDown );
+        }
+        this.setTexture( this._downSprite );
+    }
+
+    /**
+     * Updates stat and volume values once options data changes
+     * @listens Phaser.Data.Events#CHANGE_DATA
+     * @param {any} parent - A reference to the object that the Data Manager responsible for this event belongs to
+     * @param {string} key - The unique key of the data item within the Data Manager
+     * @param {any} data - The new value of the item in the Data Manager
+     * @private
+     */
+    _updateData(parent, key, data)
+    {
+        if (key === '__GameOptionsData')
+        {
+            this._sfxVolume = data.sfxVolume;
+        }
+    }
+}
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="BootScene.html">BootScene</a></li><li><a href="Button.html">Button</a></li><li><a href="Character.html">Character</a></li><li><a href="CharacterDataLoader.html">CharacterDataLoader</a></li><li><a href="DieSprite.html">DieSprite</a></li><li><a href="FightScene.html">FightScene</a></li><li><a href="HealthBar.html">HealthBar</a></li><li><a href="MenuPanel.html">MenuPanel</a></li><li><a href="MenuScene.html">MenuScene</a></li><li><a href="module.exports_module.exports.html">exports</a></li><li><a href="OptionsScene.html">OptionsScene</a></li><li><a href="Stage.html">Stage</a></li><li><a href="StageDataLoader.html">StageDataLoader</a></li><li><a href="TitleScene.html">TitleScene</a></li></ul><h3>Global</h3><ul><li><a href="global.html#addButton">addButton</a></li><li><a href="global.html#addDamage">addDamage</a></li><li><a href="global.html#addMenuControlButton">addMenuControlButton</a></li><li><a href="global.html#buttonCount">buttonCount</a></li><li><a href="global.html#cleanUp">cleanUp</a></li><li><a href="global.html#config">config</a></li><li><a href="global.html#createAllCharacters">createAllCharacters</a></li><li><a href="global.html#createAllStages">createAllStages</a></li><li><a href="global.html#dieFailAnimation">dieFailAnimation</a></li><li><a href="global.html#enterButtonActiveState">enterButtonActiveState</a></li><li><a href="global.html#enterButtonHoverState">enterButtonHoverState</a></li><li><a href="global.html#enterButtonRestState">enterButtonRestState</a></li><li><a href="global.html#game">game</a></li><li><a href="global.html#getAllCharacterData">getAllCharacterData</a></li><li><a href="global.html#getAllStageData">getAllStageData</a></li><li><a href="global.html#HP">HP</a></li><li><a href="global.html#loadAnimationData">loadAnimationData</a></li><li><a href="global.html#loadAtlas">loadAtlas</a></li><li><a href="global.html#loadEmitterData">loadEmitterData</a></li><li><a href="global.html#loadImage">loadImage</a></li><li><a href="global.html#loadImageComponent">loadImageComponent</a></li><li><a href="global.html#loadImageList">loadImageList</a></li><li><a href="global.html#loadSoundData">loadSoundData</a></li><li><a href="global.html#loadSpriteSheet">loadSpriteSheet</a></li><li><a href="global.html#loadUnityAtlas">loadUnityAtlas</a></li><li><a href="global.html#modifyValue">modifyValue</a></li><li><a href="global.html#moveButtonContainerDown">moveButtonContainerDown</a></li><li><a href="global.html#moveButtonContainerUp">moveButtonContainerUp</a></li><li><a href="global.html#parseAnimationData">parseAnimationData</a></li><li><a href="global.html#playAnimation">playAnimation</a></li><li><a href="global.html#playAnimationPromise">playAnimationPromise</a></li><li><a href="global.html#playBGM">playBGM</a></li><li><a href="global.html#playTweenPromise">playTweenPromise</a></li><li><a href="global.html#reset">reset</a></li><li><a href="global.html#resetAfterDieFail">resetAfterDieFail</a></li><li><a href="global.html#resetBGM">resetBGM</a></li><li><a href="global.html#resetHP">resetHP</a></li><li><a href="global.html#resetValue">resetValue</a></li><li><a href="global.html#rollDieAnimation">rollDieAnimation</a></li><li><a href="global.html#setMaximumValue">setMaximumValue</a></li><li><a href="global.html#setStageZIndex">setStageZIndex</a></li><li><a href="global.html#setTimedSound">setTimedSound</a></li><li><a href="global.html#setValue">setValue</a></li><li><a href="global.html#setVisible">setVisible</a></li><li><a href="global.html#stopBGM">stopBGM</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.5</a> on Sun Aug 30 2020 21:40:42 GMT+0100 (British Summer Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

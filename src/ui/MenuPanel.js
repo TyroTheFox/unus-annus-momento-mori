@@ -1,6 +1,44 @@
 import Button from './Button';
 
+/**
+ * @typedef {Object} MenuPanel#Config
+ * @property {number|Object} [scale] - Scale values for the background panel
+ * @property {number} [scale.x] - X Scale value
+ * @property {number} [scale.y] - Y Scale value
+ * @property {Object} button - Button Data
+ * @property {string} button.spriteOver - Name the over sprite is cached over
+ * @property {string} button.spriteDown - Name the over sprite is cached over
+ * @property {string} button.spriteIdle - Name the over sprite is cached over
+ * @property {Object} mask - A mask that can be applied to the panel
+ * @property {Object} [mask.scale] - A mask that can be applied to the panel
+ * @property {number} [mask.scale.x] - X Scale value
+ * @property {number} [mask.scale.y] - Y Scale value
+ * @property {Object} [mask.offset] - An offset to alter the position of the panel
+ * @property {number} [mask.offset.x] - X Offset value
+ * @property {number} [mask.offset.y] - Y Offset value
+ */
+
+/**
+ * @typedef {Button#Config} MenuPanel#MenuButtonConfig
+ * @property {Object} [mask.offset] - An offset to alter the position of the panel
+ * @property {number} [mask.offset.x] - X Offset value
+ * @property {number} [mask.offset.y] - Y Offset value
+ */
+
+/**
+ * Creates a panel of buttons to interact with
+ * @class MenuPanel
+ * @extends Phaser.GameObjects.Sprite
+ */
 export default class MenuPanel extends Phaser.GameObjects.Sprite {
+    /**
+     * @constructor
+     * @param {Phaser.Scene} scene - Scene Context
+     * @param {string} backgroundKey - Name to cache the object under
+     * @param {number} x - X Co-ord
+     * @param {number} y - y Co-ord
+     * @param {MenuPanel#Config} config - Configuration object for the panel
+     */
     constructor( scene, backgroundKey, x, y, config ) {
         super(scene, x, y, backgroundKey);
 
@@ -8,12 +46,15 @@ export default class MenuPanel extends Phaser.GameObjects.Sprite {
             this.setScale( config.scale.x || config.scale, config.scale.y || config.scale.x );
         }
 
+        /** @type {string} */
         this._idleTexture = config.button.spriteIdle;
 
         if ( config.button.spriteOver ) {
+            /** @type {string} */
             this._overSprite = config.button.spriteOver;
         }
         if ( config.button.spriteDown ) {
+            /** @type {string} */
             this._downSprite = config.button.spriteDown;
         }
 
@@ -21,8 +62,11 @@ export default class MenuPanel extends Phaser.GameObjects.Sprite {
 
         this.scene.add.existing( this );
 
+        /** @type {Phaser.GameObjects.Container} */
         this._componentContainer = this.scene.add.container();
+        /** @type {Phaser.GameObjects.Container} */
         this._controlsContainer = this.scene.add.container();
+        /** @type {Phaser.Math.Vector2} */
         const centerPos = this.getCenter();
 
         this._componentContainer.x = centerPos.x;
@@ -31,9 +75,13 @@ export default class MenuPanel extends Phaser.GameObjects.Sprite {
         this._controlsContainer.x = centerPos.x;
         this._controlsContainer.y = centerPos.y;
 
+        /** @type {Array.<Button>} */
         this._buttonList = [];
+        /** @type {Array.<Button>} */
         this._controlButtonsList = [];
+        /** @type {Array.<Phaser.GameObjects.Text>} */
         this._textList = [];
+        /** @type {Array.<Phaser.GameObjects.Text>} */
         this._controlTextList = [];
 
         if ( config.mask ) {
@@ -54,6 +102,9 @@ export default class MenuPanel extends Phaser.GameObjects.Sprite {
         }
     }
 
+    /**
+     * @type {number}
+     */
     get buttonCount() {
         return this._buttonList.length;
     }
@@ -65,6 +116,11 @@ export default class MenuPanel extends Phaser.GameObjects.Sprite {
         }
     }
 
+    /**
+     * Adds a button to the panel
+     * @param {Button#Config} config - Configuration for a button
+     * @returns {Button}
+     */
     addButton( config ) {
         const centerPos = this.getCenter();
 
@@ -123,6 +179,10 @@ export default class MenuPanel extends Phaser.GameObjects.Sprite {
         return newButton;
     }
 
+    /**
+     * Moves the panel upwards
+     * @param {number} offsetMod - Value to change position by
+     */
     moveButtonContainerUp( offsetMod ) {
         const menuBounds = this.getBounds();
         const containerBounds = this._componentContainer.getBounds();
@@ -136,6 +196,10 @@ export default class MenuPanel extends Phaser.GameObjects.Sprite {
         }
     }
 
+    /**
+     * Moves container downwards
+     * @param {number} offsetMod - Value to change position by
+     */
     moveButtonContainerDown( offsetMod ) {
         const menuBounds = this.getBounds();
         const containerBounds = this._componentContainer.getBounds();
@@ -149,6 +213,11 @@ export default class MenuPanel extends Phaser.GameObjects.Sprite {
         }
     }
 
+    /**
+     *
+     * @param {MenuPanel#MenuButtonConfig} config - Configuration for this button
+     * @returns {Button}
+     */
     addMenuControlButton( config ) {
         const centerPos = this.getCenter();
 
@@ -199,6 +268,10 @@ export default class MenuPanel extends Phaser.GameObjects.Sprite {
         return newButton;
     }
 
+    /**
+     * Sets the visible of the whole button
+     * @param {boolean} v - Visible or not
+     */
     setVisible( v ) {
         this.visible = v;
         this._componentContainer.list.forEach( ( child ) => { child.setVisible(v) } );

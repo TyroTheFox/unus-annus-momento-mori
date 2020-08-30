@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: scenes/OptionsScene.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: scenes/OptionsScene.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import MenuPanel from '../ui/MenuPanel';
+import Stage from '../engine/Stage';
+import Button from '../ui/Button';
+
+/**
+ * Scene for altering the game's options
+ * @class OptionsScene
+ * @extends {Phaser.Scene}
+ */
+class OptionsScene extends Phaser.Scene {
+    /**
+     * @constructor
+     */
+    constructor() {
+        super({
+            key: 'OptionsScene'
+        });
+
+        /** @type {GameOptions} */
+        this._optionsKey = '__GameOptionsData';
+
+        /** @type {DefaultOptions} */
+        this._optionsDefaultKey = '__GameOptionsDefaultData';
+
+        /** @type {Phaser.GameObjects.TextStyle} */
+        this._textStyle = {
+            fontSize: '50px',
+            fontFamily: 'Poppins',
+            color: '#fff',
+            align: 'center'
+        }
+    }
+
+    /**
+     * Initialises the object
+     */
+    init() {
+        this._optionsData = this.registry.get( this._optionsKey );
+    }
+
+    /**
+     * Creates all game objects
+     */
+    create() {
+        this._optionsData = this.registry.get( this._optionsKey );
+
+        let sh = this.game.config.height;
+        let sw = this.game.config.width;
+
+        this._titleBackdrop = new Stage( this, 'Spiral', 'spiral' );
+
+        // BACK BUTTON
+        /** @type {Button} */
+        this._backButton = new Button(
+            this,
+            'button_Idle',
+            100, sh * 0.1,
+            {
+                scale: {
+                    x: 5,
+                    y: 2
+                },
+                spriteOver: 'button_Over',
+                spriteDown: 'button_Down',
+                text: {
+                    text: "BACK",
+                    style: {
+                        fontSize: '30px',
+                        fontFamily: 'Poppins',
+                        color: '#fff',
+                        align: 'center'
+                    },
+                    colorOver: '#fff',
+                    colorDown: '#000'
+                },
+                callback: ( button, additionalData ) => {
+                    this.scene.stop( 'MenuScene' );
+                    this.scene.start( 'MenuScene', { setToCharacterSelect: false } );
+                }
+            }
+        );
+
+        this._backButton.setDepth( 10 );
+        this._backButton.text.setDepth( 11 );
+
+        // MAIN MENU
+        /** @type {MenuPanel} */
+        this._mainMenu = new MenuPanel(
+            this,
+            'button_Idle',
+            sw * 0.5, sh * 0.5,
+            {
+                scale: {
+                    x: 30,
+                    y: 25
+                },
+                button: {
+                    spriteIdle: 'button_Idle',
+                    spriteOver: 'button_Over',
+                    spriteDown: 'button_Down'
+                }
+            }
+        );
+
+        this._mainMenu.addButton(
+            {
+                scale: {
+                    x: 20,
+                    y: 3
+                },
+                text: {
+                    text: `MUSIC VOLUME: ${this._optionsData.musicVolume * 100}%`,
+                    style: this._textStyle,
+                    colorOver: '#fff',
+                    colorDown: '#000'
+                },
+                callback: ( button ) => {
+                    if ( this._optionsData.musicVolume &lt; 1 ) {
+                        this._optionsData.musicVolume += 0.25;
+                    } else {
+                        this._optionsData.musicVolume = 0;
+                    }
+
+                    this.registry.set( this._optionsKey, this._optionsData );
+
+                    button.text.text = `MUSIC VOLUME: ${this._optionsData.musicVolume * 100}%`;
+                }
+            }
+        );
+
+        this._mainMenu.addButton(
+            {
+                scale: {
+                    x: 20,
+                    y: 3
+                },
+                text: {
+                    text: `SFX VOLUME: ${this._optionsData.sfxVolume * 100}%`,
+                    style: this._textStyle,
+                    colorOver: '#fff',
+                    colorDown: '#000'
+                },
+                callback: ( button ) => {
+                    if ( this._optionsData.sfxVolume &lt; 1 ) {
+                        this._optionsData.sfxVolume += 0.25;
+                    } else {
+                        this._optionsData.sfxVolume = 0;
+                    }
+
+                    this.registry.set( this._optionsKey, this._optionsData );
+
+                    button.text.text = `SFX VOLUME: ${this._optionsData.sfxVolume * 100}%`;
+                }
+            }
+        );
+
+        /** @type {Button} */
+        this._hp = this._mainMenu.addButton(
+            {
+                scale: {
+                    x: 20,
+                    y: 3
+                },
+                text: {
+                    text: `MAX HP: ${this._optionsData.HP}`,
+                    style: this._textStyle,
+                    colorOver: '#fff',
+                    colorDown: '#000'
+                },
+                callback: ( button ) => {
+                    if ( this._optionsData.HP &lt; 20 ) {
+                        this._optionsData.HP += 5;
+                    } else {
+                        this._optionsData.HP = 5;
+                    }
+
+                    this.registry.set( this._optionsKey, this._optionsData );
+
+                    button.text.text = `MAX HP: ${this._optionsData.HP}`;
+                }
+            }
+        );
+
+        /** @type {Button} */
+        this._damage = this._mainMenu.addButton(
+            {
+                scale: {
+                    x: 20,
+                    y: 3
+                },
+                text: {
+                    text: `ATTACK DAMAGE: ${this._optionsData.damage}`,
+                    style: this._textStyle,
+                    colorOver: '#fff',
+                    colorDown: '#000'
+                },
+                callback: ( button ) => {
+                    if ( this._optionsData.damage &lt; 20 ) {
+                        if ( this._optionsData.damage === 1 ) {
+                            this._optionsData.damage += 4;
+                        } else {
+                            this._optionsData.damage += 5;
+                        }
+                    } else {
+                        this._optionsData.damage = 1;
+                    }
+
+                    this.registry.set( this._optionsKey, this._optionsData );
+
+                    button.text.text = `ATTACK DAMAGE: ${this._optionsData.damage}`;
+                }
+            }
+        );
+
+        /** @type {Button} */
+        this._crit = this._mainMenu.addButton(
+            {
+                scale: {
+                    x: 20,
+                    y: 3
+                },
+                text: {
+                    text: `CRIT DAMAGE: ${this._optionsData.crit}`,
+                    style: this._textStyle,
+                    colorOver: '#fff',
+                    colorDown: '#000'
+                },
+                callback: ( button ) => {
+                    if ( this._optionsData.crit &lt; 20 ) {
+                        if ( this._optionsData.crit === 1 ) {
+                            this._optionsData.crit += 4;
+                        } else {
+                            this._optionsData.crit += 5;
+                        }
+                    } else {
+                        this._optionsData.crit = 1;
+                    }
+
+                    this.registry.set( this._optionsKey, this._optionsData );
+
+                    button.text.text = `CRIT DAMAGE: ${this._optionsData.crit}`;
+                }
+            }
+        );
+
+        this._mainMenu.addButton(
+            {
+                scale: {
+                    x: 20,
+                    y: 3
+                },
+                text: {
+                    text: `RESET FIGHT SETTINGS`,
+                    style: this._textStyle,
+                    colorOver: '#fff',
+                    colorDown: '#000'
+                },
+                callback: ( button ) => {
+                    const optionsDefaultData = this.registry.get( this._optionsDefaultKey );
+                    this.registry.set( this._optionsKey, {
+                        ...this._optionsData,
+                        ...optionsDefaultData
+                    } );
+
+                    this._optionsData = this.registry.get( this._optionsKey );
+
+                    this._hp.text.text = `MAX HP: ${optionsDefaultData.HP}`;
+                    this._damage.text.text = `ATTACK DAMAGE: ${optionsDefaultData.damage}`;
+                    this._crit.text.text = `CRIT DAMAGE: ${optionsDefaultData.crit}`;
+                }
+            }
+        );
+        // MAIN MENU
+    }
+}
+
+export default OptionsScene;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="BootScene.html">BootScene</a></li><li><a href="Button.html">Button</a></li><li><a href="Character.html">Character</a></li><li><a href="CharacterDataLoader.html">CharacterDataLoader</a></li><li><a href="DieSprite.html">DieSprite</a></li><li><a href="FightScene.html">FightScene</a></li><li><a href="HealthBar.html">HealthBar</a></li><li><a href="MenuPanel.html">MenuPanel</a></li><li><a href="MenuScene.html">MenuScene</a></li><li><a href="module.exports_module.exports.html">exports</a></li><li><a href="OptionsScene.html">OptionsScene</a></li><li><a href="Stage.html">Stage</a></li><li><a href="StageDataLoader.html">StageDataLoader</a></li><li><a href="TitleScene.html">TitleScene</a></li></ul><h3>Global</h3><ul><li><a href="global.html#addButton">addButton</a></li><li><a href="global.html#addDamage">addDamage</a></li><li><a href="global.html#addMenuControlButton">addMenuControlButton</a></li><li><a href="global.html#buttonCount">buttonCount</a></li><li><a href="global.html#cleanUp">cleanUp</a></li><li><a href="global.html#config">config</a></li><li><a href="global.html#createAllCharacters">createAllCharacters</a></li><li><a href="global.html#createAllStages">createAllStages</a></li><li><a href="global.html#dieFailAnimation">dieFailAnimation</a></li><li><a href="global.html#enterButtonActiveState">enterButtonActiveState</a></li><li><a href="global.html#enterButtonHoverState">enterButtonHoverState</a></li><li><a href="global.html#enterButtonRestState">enterButtonRestState</a></li><li><a href="global.html#game">game</a></li><li><a href="global.html#getAllCharacterData">getAllCharacterData</a></li><li><a href="global.html#getAllStageData">getAllStageData</a></li><li><a href="global.html#HP">HP</a></li><li><a href="global.html#loadAnimationData">loadAnimationData</a></li><li><a href="global.html#loadAtlas">loadAtlas</a></li><li><a href="global.html#loadEmitterData">loadEmitterData</a></li><li><a href="global.html#loadImage">loadImage</a></li><li><a href="global.html#loadImageComponent">loadImageComponent</a></li><li><a href="global.html#loadImageList">loadImageList</a></li><li><a href="global.html#loadSoundData">loadSoundData</a></li><li><a href="global.html#loadSpriteSheet">loadSpriteSheet</a></li><li><a href="global.html#loadUnityAtlas">loadUnityAtlas</a></li><li><a href="global.html#modifyValue">modifyValue</a></li><li><a href="global.html#moveButtonContainerDown">moveButtonContainerDown</a></li><li><a href="global.html#moveButtonContainerUp">moveButtonContainerUp</a></li><li><a href="global.html#parseAnimationData">parseAnimationData</a></li><li><a href="global.html#playAnimation">playAnimation</a></li><li><a href="global.html#playAnimationPromise">playAnimationPromise</a></li><li><a href="global.html#playBGM">playBGM</a></li><li><a href="global.html#playTweenPromise">playTweenPromise</a></li><li><a href="global.html#reset">reset</a></li><li><a href="global.html#resetAfterDieFail">resetAfterDieFail</a></li><li><a href="global.html#resetBGM">resetBGM</a></li><li><a href="global.html#resetHP">resetHP</a></li><li><a href="global.html#resetValue">resetValue</a></li><li><a href="global.html#rollDieAnimation">rollDieAnimation</a></li><li><a href="global.html#setMaximumValue">setMaximumValue</a></li><li><a href="global.html#setStageZIndex">setStageZIndex</a></li><li><a href="global.html#setTimedSound">setTimedSound</a></li><li><a href="global.html#setValue">setValue</a></li><li><a href="global.html#setVisible">setVisible</a></li><li><a href="global.html#stopBGM">stopBGM</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.5</a> on Sun Aug 30 2020 21:40:42 GMT+0100 (British Summer Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

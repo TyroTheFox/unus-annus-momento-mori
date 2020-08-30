@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: engine/Character.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: engine/Character.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * @typedef {Object} Character#CharacterConfig
+ * @property {number|Object} [scale] - Scale values for the character sprites
+ * @property {number} [scale.x] - X Scale value
+ * @property {number} [scale.y] - Y Scale value
+ * @property {number} [alpha] - Alpha value
+ * @property {Object} [anchor] - Anchor value for the sprite
+ * @property {number} anchor.x - X anchor value
+ * @property {number} anchor.y - Y anchor value
+ * @property {string} blendMode - Name of a phaser blend mode
+ */
+
+/**
+ * @typedef {Object} Character#SoundData
+ * @property {string} sfx - Name the sound effect is cached under
+ * @property {string} frame - The animation frame the sound should play on
+ * @property {string} time - The delay the sound should play after, starting from when the animation starts playing
+ */
+
+/**
+ * @typedef {Object} Character#SoundEffectDataList
+ * @property {{key: string, data:Array.&lt;Character#SoundData>}} timing - Object for handling the timing of when the sound should play
+ */
+
+/**
+ * @typedef {Character#SoundData} Character#SoundEffect
+ * @property {Phaser.Sound.BaseSound} sound - The sound object for the sound effect
+ */
+
+/**
+ * @typedef {{key: string, soundData: Character#SoundEffect}} Character#SoundEffectsRegister
+ */
+
+/**
+ * @typedef {Object} Character#EmitterData
+ * @property {string} name - Name of the particle asset in the cache
+ * @property {string} action - Associated action the particle should fire on
+ * @property {Phaser.Types.GameObjects.Particles.ParticleEmitterConfig} [config] - Emitter config
+ * @property {string} duration - How long the emitter should fire for
+ * @property {number} [frame] - The frame that an emitter should fire on for its given animation
+ * @property {number} [time] - The delay before firing after the associated action is made
+ * @property {Phaser.GameObjects.GameObject} target - Who to fire the particle over; the opponent or this character
+ */
+
+/**
+ * @typedef {Array.&lt;Character#EmitterData>} Character#EmitterDataList
+ */
+
+/**
+ * @typedef {Character#EmitterData} Character#Emitter
+ * @property {Phaser.GameObjects.Particles.ParticleEmitter} emitter - Emitter object
+ */
+
+/**
+ * @typedef {{key: string, emitterData: Character#Emitter}} Character#EmitterRegister
+ */
+
+/**
+ * Characters players can play as
+ * @class Character
+ * @extends Phaser.GameObjects.Sprite
+ */
+export default class Character extends Phaser.GameObjects.Sprite {
+
+    /**
+     * @constructor
+     * @param {Phaser.Scene} scene - Scene Context
+     * @param {number} x - X co-ord
+     * @param {number} y - Y co-ord
+     * @param {string} characterName - Displayed Character Name
+     * @param {string} folderName - Name of Data Folder, used to find cached data
+     * @param {Character#CharacterConfig} config - Configuration object
+     */
+    constructor( scene, x, y, characterName, folderName, config = null ) {
+        super( scene, x, y, characterName );
+        this.characterName = characterName;
+        this.folderName = folderName;
+
+        /** @type {Character#CharacterConfig} */
+        this.config = config;
+
+        this.anims.play( `idle-${this.folderName}` );
+
+        this.scene.registry.events.on('changedata', this._updateData, this);
+
+        /** @type {GameOptions} */
+        this._optionsData = this.scene.registry.get( '__GameOptionsData' );
+
+        /**
+         * Maximum HP value
+         * @type {number}
+         * @private
+         */
+        this._maxHP = this._optionsData.HP;
+        this._damage = 0;
+
+        this.scene.add.existing( this );
+
+        /** @type{Character#SoundEffectsRegister} */
+        this._sfx = {};
+        this._sfxVolume = this._optionsData.sfxVolume;
+
+        /** @type{Character#EmitterRegister} */
+        this._emitters = {};
+        this.emitterTarget = this;
+
+        /** @type {Character#SoundEffectDataList} */
+        const soundsData = this.scene.game.cache.json.get( `sfx_${folderName}` );
+
+        if ( soundsData ) {
+            for ( const [animKey, data] of Object.entries( soundsData.timing ) ) {
+                data.forEach( ( sfxData ) => {
+                    /** @type {?Phaser.Sound.BaseSound} */
+                    let sfx = null;
+
+                    if (this._sfx.hasOwnProperty(animKey)) {
+                        /** @type {?Character#SoundEffect} */
+                        const sound = this._sfx[animKey].find( ( sound ) => {
+                            if ( sound.key ) {
+                                return sound.key === sfxData.sfx;
+                            } else {
+                                return false;
+                            }
+                        });
+
+                        if ( sound ) {
+                            sfx = sound;
+                        } else {
+                            sfx = this.scene.sound.add( sfxData.sfx );
+                        }
+                    } else {
+                        sfx = this.scene.sound.add( sfxData.sfx );
+                        this._sfx[animKey] = [];
+                    }
+
+                    /** @type {Character#SoundEffect} */
+                    const soundData = {
+                        ...sfxData,
+                        sound: sfx
+                    }
+
+                    this._sfx[animKey].push(soundData);
+                });
+            }
+        }
+
+        /** @type {Character#EmitterDataList} */
+        const emitterData = this.scene.game.cache.json.get( `emitter_${folderName}` );
+
+        if ( emitterData ) {
+            for (const data of emitterData) {
+                const { name, action, config } = data;
+
+                const particles = this.scene.add.particles( name );
+                particles.setDepth(10);
+
+                const emitter = particles.createEmitter( config );
+                emitter.stop();
+
+                if ( !this._emitters.hasOwnProperty( action ) ) {
+                    this._emitters[action] = [];
+                }
+
+                this._emitters[action].push({
+                    emitter: emitter,
+                    ...data
+                });
+            }
+        }
+
+        if ( this.config ) {
+            if ( this.config.scale ) {
+                if ( this.config.scale.x || this.config.scale.y ) {
+                    this.setScale( this.config.scale.x || 1, this.config.scale.y || 1 );
+                } else {
+                    this.setScale( this.config.scale );
+                }
+            }
+
+            if ( this.config.alpha ) {
+                this.alpha = this.config.alpha;
+            }
+
+            if ( this.config.anchor ) {
+                this.setOrigin( this.config.anchor.x, this.config.anchor.y );
+            }
+
+            if ( this.config.blendMode ) {
+                this.setBlendMode( Phaser.BlendModes[this.config.blendMode] );
+            }
+        }
+    }
+
+    get maxHP () {
+        return this._maxHP;
+    }
+
+    /**
+     * Current HP Value
+     * @type {number}
+     */
+    get HP () {
+        return this._maxHP - this._damage;
+    }
+
+    /**
+     * Resets HP to maximum
+     */
+    resetHP () {
+        this._damage = 0;
+    }
+
+    /**
+     * Inflicts damage on the character
+     * @param {number} value - Amount of damage to give
+     */
+    addDamage ( value ) {
+        this._damage += value;
+    }
+
+    /**
+     * Promisified version of playing an animation
+     * @param {string} key - Name of animation to play
+     * @param {boolean} [emitterOverride=false] - Whether any emitters should target the opponent or fire in the middle of the player and the target
+     * @returns {Promise}
+     */
+    playAnimationPromise( key, emitterOverride = false ) {
+        this.playAnimation( key, emitterOverride );
+        const that = this;
+        return new Promise( ( fulfilled, rejected ) => {
+            const eventName = `animationcomplete`;
+            that.once(
+                eventName,
+                ( animation, frame ) => {
+                    if ( animation.key === `${key}-${this.folderName}` ) {
+                        fulfilled();
+                    }
+                },
+                that
+            );
+        } );
+    }
+
+    /**
+     * Plays a given animation
+     * @param {string} key - Name of animation to play
+     * @param {boolean} [emitterOverride=false] - Whether any emitters should target the opponent or fire in the middle of the player and the target
+     */
+    playAnimation( key, emitterOverride = false ) {
+        this.anims.play( `${key}-${this.folderName}` );
+
+        this.setTimedSound( key );
+
+        const eventName = `animationupdate`;
+
+        this.once( eventName, ( animation, frame ) => {
+            if ( animation.key === `${key}-${this.folderName}` ) {
+                if ( this._sfx.hasOwnProperty( key ) ) {
+                    for (const sfxData of this._sfx[key] ) {
+                        if ( sfxData.frame &amp;&amp; sfxData.frame &lt;= frame.index ) {
+                            sfxData.sound.setVolume( this._sfxVolume );
+                            sfxData.sound.play();
+                        }
+                    }
+                }
+
+                if ( this._emitters.hasOwnProperty( key ) ) {
+                    for ( const emitterData of this._emitters[key] ) {
+                        if ( emitterData.frame &amp;&amp; emitterData.frame &lt;= frame.index ) {
+                            let followTarget = this;
+                            let offsetX = 0;
+                            let offsetY = 0;
+
+                            if ( emitterData.target ) {
+                                if ( emitterData.target === 'enemy' ) {
+                                    if ( emitterOverride ) {
+                                        const line = new Phaser.Geom.Line(
+                                            this.x, this.y,
+                                            this.emitterTarget.x, this.emitterTarget.y
+                                        );
+                                        const midPoint = Phaser.Geom.Line.GetMidPoint(line);
+                                        emitterData.emitter.setPosition( midPoint.x, midPoint.y );
+                                    } else {
+                                        followTarget = this.emitterTarget;
+                                    }
+                                } else if ( emitterData.target === 'self' ) {
+                                    followTarget = this;
+                                }
+                            }
+                            if ( !emitterOverride ) {
+                                if (emitterData.offset) {
+                                    offsetX = emitterData.offset.x || 0;
+                                    offsetY = emitterData.offset.y || 0;
+                                }
+                                emitterData.emitter.startFollow(followTarget, offsetX, offsetY);
+                            }
+
+                            emitterData.emitter.start();
+                            this.scene.time.delayedCall( emitterData.duration, () => {
+                                emitterData.emitter.stop();
+                                emitterData.emitter.stopFollow();
+                            }, [], this );
+                        }
+                    }
+                }
+            }
+        }, this );
+    }
+
+    /**
+     * Sets an sound or emitter effect to fire after a given delay
+     * @param {string} key - An animation key to check
+     */
+    setTimedSound( key ) {
+        if ( this._sfx.hasOwnProperty( key ) ) {
+            for (const sfxData of this._sfx[key] ) {
+                if ( sfxData.time ) {
+                    sfxData.sound.setVolume( this._sfxVolume );
+                    this.scene.time.delayedCall( sfxData.time, () => { sfxData.sound.play() }, [], this);
+                }
+            }
+        }
+
+        if ( this._emitters.hasOwnProperty( key ) ) {
+            for (const emitterData of this._emitters[key] ) {
+                if ( emitterData.time ) {
+                    if ( emitterData.target ) {
+                        if ( emitterData.target === 'enemy' ) {
+                            emitterData.emitter.startFollow( this.emitterTarget );
+                        } else if ( emitterData.target === 'self' ) {
+                            emitterData.emitter.startFollow( this );
+                        }
+                    }
+                    this.scene.time.delayedCall( emitterData.time, () => {
+                        emitterData.emitter.start();
+                        this.scene.time.delayedCall( emitterData.duration, () => {
+                            emitterData.emitter.stop();
+                            emitterData.emitter.stopFollow();
+                        }, [], this );
+                    }, [], this);
+                }
+            }
+        }
+    }
+
+    /**
+     * Updates stat and volume values once options data changes
+     * @listens Phaser.Data.Events#CHANGE_DATA
+     * @param {any} parent - A reference to the object that the Data Manager responsible for this event belongs to
+     * @param {string} key - The unique key of the data item within the Data Manager
+     * @param {any} data - The new value of the item in the Data Manager
+     * @private
+     */
+    _updateData(parent, key, data)
+    {
+        if (key === '__GameOptionsData')
+        {
+            this._maxHP = data.HP;
+            this._sfxVolume = data.sfxVolume;
+        }
+    }
+}
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="BootScene.html">BootScene</a></li><li><a href="Button.html">Button</a></li><li><a href="Character.html">Character</a></li><li><a href="CharacterDataLoader.html">CharacterDataLoader</a></li><li><a href="DieSprite.html">DieSprite</a></li><li><a href="FightScene.html">FightScene</a></li><li><a href="HealthBar.html">HealthBar</a></li><li><a href="MenuPanel.html">MenuPanel</a></li><li><a href="MenuScene.html">MenuScene</a></li><li><a href="module.exports_module.exports.html">exports</a></li><li><a href="OptionsScene.html">OptionsScene</a></li><li><a href="Stage.html">Stage</a></li><li><a href="StageDataLoader.html">StageDataLoader</a></li><li><a href="TitleScene.html">TitleScene</a></li></ul><h3>Global</h3><ul><li><a href="global.html#addButton">addButton</a></li><li><a href="global.html#addDamage">addDamage</a></li><li><a href="global.html#addMenuControlButton">addMenuControlButton</a></li><li><a href="global.html#buttonCount">buttonCount</a></li><li><a href="global.html#cleanUp">cleanUp</a></li><li><a href="global.html#config">config</a></li><li><a href="global.html#createAllCharacters">createAllCharacters</a></li><li><a href="global.html#createAllStages">createAllStages</a></li><li><a href="global.html#dieFailAnimation">dieFailAnimation</a></li><li><a href="global.html#enterButtonActiveState">enterButtonActiveState</a></li><li><a href="global.html#enterButtonHoverState">enterButtonHoverState</a></li><li><a href="global.html#enterButtonRestState">enterButtonRestState</a></li><li><a href="global.html#game">game</a></li><li><a href="global.html#getAllCharacterData">getAllCharacterData</a></li><li><a href="global.html#getAllStageData">getAllStageData</a></li><li><a href="global.html#HP">HP</a></li><li><a href="global.html#loadAnimationData">loadAnimationData</a></li><li><a href="global.html#loadAtlas">loadAtlas</a></li><li><a href="global.html#loadEmitterData">loadEmitterData</a></li><li><a href="global.html#loadImage">loadImage</a></li><li><a href="global.html#loadImageComponent">loadImageComponent</a></li><li><a href="global.html#loadImageList">loadImageList</a></li><li><a href="global.html#loadSoundData">loadSoundData</a></li><li><a href="global.html#loadSpriteSheet">loadSpriteSheet</a></li><li><a href="global.html#loadUnityAtlas">loadUnityAtlas</a></li><li><a href="global.html#modifyValue">modifyValue</a></li><li><a href="global.html#moveButtonContainerDown">moveButtonContainerDown</a></li><li><a href="global.html#moveButtonContainerUp">moveButtonContainerUp</a></li><li><a href="global.html#parseAnimationData">parseAnimationData</a></li><li><a href="global.html#playAnimation">playAnimation</a></li><li><a href="global.html#playAnimationPromise">playAnimationPromise</a></li><li><a href="global.html#playBGM">playBGM</a></li><li><a href="global.html#playTweenPromise">playTweenPromise</a></li><li><a href="global.html#reset">reset</a></li><li><a href="global.html#resetAfterDieFail">resetAfterDieFail</a></li><li><a href="global.html#resetBGM">resetBGM</a></li><li><a href="global.html#resetHP">resetHP</a></li><li><a href="global.html#resetValue">resetValue</a></li><li><a href="global.html#rollDieAnimation">rollDieAnimation</a></li><li><a href="global.html#setMaximumValue">setMaximumValue</a></li><li><a href="global.html#setStageZIndex">setStageZIndex</a></li><li><a href="global.html#setTimedSound">setTimedSound</a></li><li><a href="global.html#setValue">setValue</a></li><li><a href="global.html#setVisible">setVisible</a></li><li><a href="global.html#stopBGM">stopBGM</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.5</a> on Sun Aug 30 2020 21:40:42 GMT+0100 (British Summer Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

@@ -1,7 +1,32 @@
+/**
+ * @typedef {Object} HealthBar#Config
+ * @property {number|Object} [scale] - Scale values for the character sprites
+ * @property {number} x - X Co-ord value
+ * @property {number} y - Y Co-ord value
+ * @property {boolean} flip - Whether or not to flip the health bar to sit on the other side of the screen
+ * @property {boolean} invert - Inverts the assets to a secondary set for an alternative style and appearance
+ * @property {number} scale - Sets a scale for the whole of the health bar
+ * @property {string} characterName - Display name for the health bar
+ * @property {Phaser.GameObjects.TextStyle} textStyle - Text style applied to the character name
+ */
+
+/**
+ * Visual Element showing player health
+ * @class HealthBar
+ */
 export default class HealthBar {
+    /**
+     * @constructor
+     * @param {Phaser.Scene} scene - Scene context
+     * @param {number} maximumValue - Maximum value the bar represents
+     * @param {HealthBar#Config} config - Data to configure the health bar
+     */
     constructor( scene, maximumValue, config ) {
+        /** @type {Phaser.Scene} */
         this._scene = scene;
+        /** @type {number} */
         this._maximumValue = maximumValue;
+        /** @type {number} */
         this._currentValue = this._maximumValue;
 
         this._x = config.x || 0;
@@ -12,16 +37,26 @@ export default class HealthBar {
         this._scale = config.scale || 1;
 
         if ( this._invert ) {
+            /** @type {Phaser.GameObjects.Sprite} */
             this._background = this._scene.add.sprite( this._x, this._y, 'healthbar_backgroundInv' );
+            /** @type {Phaser.GameObjects.Sprite} */
             this._redBar = this._scene.add.sprite( this._x, this._y, 'healthbar_barRed' );
+            /** @type {Phaser.GameObjects.Sprite} */
             this._redBarMask = this._scene.add.sprite( this._x, this._y, 'healthbar_barRed' );
+            /** @type {Phaser.GameObjects.Sprite} */
             this._bar = this._scene.add.sprite( this._x, this._y, 'healthbar_barInv' );
+            /** @type {Phaser.GameObjects.Sprite} */
             this._mask = this._scene.add.sprite( this._x, this._y, 'healthbar_barInv' );
         } else {
+            /** @type {Phaser.GameObjects.Sprite} */
             this._background = this._scene.add.sprite( this._x, this._y, 'healthbar_background' );
+            /** @type {Phaser.GameObjects.Sprite} */
             this._redBar = this._scene.add.sprite( this._x, this._y, 'healthbar_barRed' );
+            /** @type {Phaser.GameObjects.Sprite} */
             this._redBarMask = this._scene.add.sprite( this._x, this._y, 'healthbar_barRed' );
+            /** @type {Phaser.GameObjects.Sprite} */
             this._bar = this._scene.add.sprite( this._x, this._y, 'healthbar_bar' );
+            /** @type {Phaser.GameObjects.Sprite} */
             this._mask = this._scene.add.sprite( this._x, this._y, 'healthbar_bar' );
         }
 
@@ -34,6 +69,7 @@ export default class HealthBar {
             this._characterName.originY = 0;
         }
 
+        /** @type {Phaser.Types.Tweens.TweenBuilderConfig} */
         this._redBarTween = {
             targets: this._redBarMask,
             delay: 700,
@@ -69,6 +105,10 @@ export default class HealthBar {
         return this._currentValue;
     }
 
+    /**
+     * Sets the current value of the bar
+     * @param {number} value - Value to set to
+     */
     setValue( value ) {
         if ( value > this._maximumValue ) {
             this._currentValue = this._maximumValue;
@@ -80,6 +120,10 @@ export default class HealthBar {
         this._updateBar();
     }
 
+    /**
+     * Change the current value of the bar by, not to, the given value
+     * @param {number} value - The Value modified by
+     */
     modifyValue( value ) {
         if ( ( this._currentValue + value ) > this._maximumValue ) {
             this._currentValue = this._maximumValue;
@@ -91,16 +135,27 @@ export default class HealthBar {
         this._updateBar();
     }
 
+    /**
+     * Resets value to the given maximum
+     */
     resetValue() {
         this._currentValue = this._maximumValue;
         this._updateBar();
     }
 
+    /**
+     * Set the maximum value to something new
+     * @param {number} value - Value to set to
+     */
     setMaximumValue( value ) {
         this._maximumValue = value;
         this._updateBar();
     }
 
+    /**
+     * Updates the size of the bar values to match the current and maximum values
+     * @private
+     */
     _updateBar() {
         if ( this._flip ) {
             this._mask.x = this._x + ( ( this._maximumValue - this._currentValue ) * this._stepWidth );

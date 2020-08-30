@@ -4,7 +4,7 @@
             "key": "attack",
             "frameRate": 12
         },
-        "frameConfig": {
+        "frameData": {
             "prefix": "attack/attack-",
             "suffix": ".png",
             "zeroPad": 1,
@@ -17,7 +17,7 @@
             "key": "damage",
             "frameRate": 12
         },
-        "frameConfig": {
+        "frameData": {
             "prefix": "damage/damage-",
             "suffix": ".png",
             "zeroPad": 1,
@@ -30,7 +30,7 @@
             "key": "defeat",
             "frameRate": 12
         },
-        "frameConfig": {
+        "frameData": {
             "prefix": "defeat/defeat-",
             "suffix": ".png",
             "zeroPad": 1,
@@ -43,7 +43,7 @@
             "key": "idle",
             "frameRate": 12
         },
-        "frameConfig": {
+        "frameData": {
             "prefix": "idle/idle-",
             "suffix": ".png",
             "zeroPad": 1,
@@ -56,7 +56,7 @@
             "key": "victory",
             "frameRate": 12
         },
-        "frameConfig": {
+        "frameData": {
             "prefix": "victory/victory-",
             "suffix": ".png",
             "zeroPad": 1,

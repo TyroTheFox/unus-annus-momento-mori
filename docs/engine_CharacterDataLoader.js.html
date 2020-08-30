@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: engine/CharacterDataLoader.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: engine/CharacterDataLoader.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import * as characterData from '../../assets/characterManifest.json';
+
+/**
+ * @typedef {Object} CharacterDataLoader#CharacterManifestEntry
+ * @property {string} name - Display name for the character
+ * @property {string} folderName - Name of character data file
+ * @property {string} importMethod - A Key Flag to inform the game how sprite assets for the character are to be loaded
+ * @property {Object.&lt;string, string>} [frames] - When loading in character frames one by one, you will need to specify every single one
+ * @property {Character#CharacterConfig} [config] - Configuration file for the character
+ * @property {Phaser.Types.Loader.FileTypes.ImageFrameConfig} [spritesheetConfig] - Config for the spritesheet
+ */
+
+/**
+ * @typedef {Object} CharacterDataLoader#CharacterAnimation
+ * @property {Phaser.Types.Animations.Animation} animData - Configuration settings for the Animation
+ * @property {Phaser.Types.Animations.GenerateFrameNames} [frameData] - The configuration object for the animation frame names
+ */
+
+/**
+ * @typedef {Array.&lt;CharacterDataLoader#CharacterManifestEntry>} CharacterDataLoader#CharacterManifestData
+ */
+
+/**
+ * @class CharacterDataLoader
+ */
+export default class CharacterDataLoader {
+    /**
+     * @constructor
+     * @param {Phaser.Scene} scene - Game Context to load into
+     */
+    constructor( scene ) {
+        this._sourceDirectory = 'assets/characters';
+        this._scene = scene;
+
+        /** @type {CharacterDataLoader#CharacterManifestData} */
+        this._characterManifestData = characterData.default;
+    }
+
+    /**
+     * Load all manifest and json data needed to construct characters
+     */
+    getAllCharacterData() {
+        this._characterManifestData.forEach( ( character ) => {
+            const { folderName, importMethod, frames, spritesheetConfig } = character;
+
+            if ( !folderName ) {
+                throw 'Folder name is missing'
+            }
+
+            if ( !importMethod ){
+                throw 'Import Method not stated'
+            }
+
+            switch ( importMethod ) {
+                case 'atlas':
+                    this.loadAtlas( folderName );
+                    break;
+                case 'frames':
+                    if ( frames ) {
+                        this.loadImageList( folderName, frames );
+                    } else {
+                        throw 'Frame data not given'
+                    }
+                    break;
+                case 'unity':
+                    this.loadUnityAtlas( folderName );
+                    break;
+                case 'spritesheet':
+                    if ( spritesheetConfig ) {
+                        this.loadSpriteSheet( folderName, spritesheetConfig );
+                    } else {
+                        throw 'Spritesheet config data not given'
+                    }
+                    break;
+            }
+
+            this.loadAnimationData( folderName );
+            this.loadSoundData( folderName );
+            this.loadEmitterData( folderName );
+        } );
+    }
+
+    /**
+     * Turns loaded data and assets into usable objects
+     */
+    createAllCharacters() {
+        this._characterManifestData.forEach( ( character ) => {
+            const { folderName } = character;
+            this.parseAnimationData( folderName );
+        } );
+    }
+
+    /**
+     * Loads a list of frame images
+     * @param {string} folderName - Name of the data folder for the character
+     * @param {Object.&lt;string, string>} imageList - A list of keys and paths to frame images
+     */
+    loadImageList( folderName, imageList ) {
+        let i = 0;
+        for ( const [key, path] of Object.entries( imageList ) ) {
+            if ( !path &amp;&amp; !key ) {
+                throw 'Data wrong or missing for frame ' + i;
+            }
+
+            if ( !path ){
+                throw 'Path not given for ' + key
+            }
+
+            if ( !key ) {
+                throw 'Key not given for ' + path
+            }
+            this.loadImage( `${key}-${folderName}`, folderName, path );
+            i++;
+        }
+    }
+
+    /**
+     * Loads an image frame
+     * @param {string} key - Combination of the frame key and the folder name that the frame gets cached under
+     * @param {string} folderName - Name of the data folder for the character
+     * @param {string} imagePath - Relative path to the frame, starting at the Character's asset folder
+     */
+    loadImage( key, folderName, imagePath ) {
+        this._scene.load.image( key, `../../${this._sourceDirectory}/${folderName}/${imagePath}` );
+    }
+
+    /**
+     * Loads a sprite atlas using it's data file
+     * {string} folderName - Name of the data folder for the character
+     */
+    loadAtlas( folderName ) {
+        this._scene.load.atlas(
+            `${folderName}`,
+            `../../${this._sourceDirectory}/${folderName}/spritesheet.png`,
+            `../../${this._sourceDirectory}/${folderName}/atlas.json`);
+    }
+
+    /**
+     * Loads a spritesheet using a given config file
+     * @param {string} folderName - Name of the data folder for the character
+     * @param {Phaser.Types.Loader.FileTypes.ImageFrameConfig} spritesheetConfig - Config for the spritesheet
+     */
+    loadSpriteSheet( folderName, spritesheetConfig ) {
+        this._scene.load.spritesheet(
+            `${folderName}`,
+            `../../${this._sourceDirectory}/${folderName}/spritesheet.png`,
+            spritesheetConfig
+        );
+    }
+
+    /**
+     * Loads a Unity Sprite Atlas
+     * @param {string} folderName - Name of the data folder for the character
+     */
+    loadUnityAtlas( folderName ) {
+        this._scene.load.unityAtlas(
+            `${folderName}`,
+            `../../${this._sourceDirectory}/${folderName}/spritesheet.png`,
+            `../../${this._sourceDirectory}/${folderName}/atlas.meta`);
+    }
+
+    /**
+     * Loads json animation data
+     * @param {string} folderName - Name of the data folder for the character
+     */
+    loadAnimationData( folderName ) {
+        this._scene.load.json( `animation_${folderName}`, `../../${this._sourceDirectory}/${folderName}/animation.json`);
+    }
+
+    /**
+     * Loads json sound data
+     * @param {string} folderName - Name of the data folder for the character
+     */
+    loadSoundData( folderName ) {
+        this._scene.load.json( `sfx_${folderName}`, `../../${this._sourceDirectory}/${folderName}/sounds.json`);
+    }
+
+    /**
+     * Loads json emitter data
+     * @param {string} folderName - Name of the data folder for the character
+     */
+    loadEmitterData( folderName ) {
+        this._scene.load.json( `emitter_${folderName}`, `../../${this._sourceDirectory}/${folderName}/emitters.json`);
+    }
+
+    /**
+     * Parses animation data into sprite animations
+     * @param {string} folderName - Name of the data folder for the character
+     */
+    parseAnimationData( folderName ) {
+        /** @type {Array.&lt;CharacterDataLoader#CharacterAnimation>} */
+        const animationData = this._scene.cache.json.get( `animation_${folderName}` );
+
+        animationData.forEach( ( animation ) => {
+            const { animData, frameData } = animation;
+
+            if ( frameData ) {
+                animData.frames = this._scene.anims.generateFrameNames(`${folderName}`, animation.frameData );
+            } else if ( animData.frames ) {
+                animData.frames.forEach( ( frame ) => {
+                    frame.key = `${frame.key}-${folderName}`;
+                } );
+            } else {
+                throw 'Frames data missing from ' + folderName;
+            }
+
+            animData.key += `-${folderName}`;
+            this._scene.anims.create( animData );
+        } );
+    }
+}
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="BootScene.html">BootScene</a></li><li><a href="Button.html">Button</a></li><li><a href="Character.html">Character</a></li><li><a href="CharacterDataLoader.html">CharacterDataLoader</a></li><li><a href="DieSprite.html">DieSprite</a></li><li><a href="FightScene.html">FightScene</a></li><li><a href="HealthBar.html">HealthBar</a></li><li><a href="MenuPanel.html">MenuPanel</a></li><li><a href="MenuScene.html">MenuScene</a></li><li><a href="module.exports_module.exports.html">exports</a></li><li><a href="OptionsScene.html">OptionsScene</a></li><li><a href="Stage.html">Stage</a></li><li><a href="StageDataLoader.html">StageDataLoader</a></li><li><a href="TitleScene.html">TitleScene</a></li></ul><h3>Global</h3><ul><li><a href="global.html#addButton">addButton</a></li><li><a href="global.html#addDamage">addDamage</a></li><li><a href="global.html#addMenuControlButton">addMenuControlButton</a></li><li><a href="global.html#buttonCount">buttonCount</a></li><li><a href="global.html#cleanUp">cleanUp</a></li><li><a href="global.html#config">config</a></li><li><a href="global.html#createAllCharacters">createAllCharacters</a></li><li><a href="global.html#createAllStages">createAllStages</a></li><li><a href="global.html#dieFailAnimation">dieFailAnimation</a></li><li><a href="global.html#enterButtonActiveState">enterButtonActiveState</a></li><li><a href="global.html#enterButtonHoverState">enterButtonHoverState</a></li><li><a href="global.html#enterButtonRestState">enterButtonRestState</a></li><li><a href="global.html#game">game</a></li><li><a href="global.html#getAllCharacterData">getAllCharacterData</a></li><li><a href="global.html#getAllStageData">getAllStageData</a></li><li><a href="global.html#HP">HP</a></li><li><a href="global.html#loadAnimationData">loadAnimationData</a></li><li><a href="global.html#loadAtlas">loadAtlas</a></li><li><a href="global.html#loadEmitterData">loadEmitterData</a></li><li><a href="global.html#loadImage">loadImage</a></li><li><a href="global.html#loadImageComponent">loadImageComponent</a></li><li><a href="global.html#loadImageList">loadImageList</a></li><li><a href="global.html#loadSoundData">loadSoundData</a></li><li><a href="global.html#loadSpriteSheet">loadSpriteSheet</a></li><li><a href="global.html#loadUnityAtlas">loadUnityAtlas</a></li><li><a href="global.html#modifyValue">modifyValue</a></li><li><a href="global.html#moveButtonContainerDown">moveButtonContainerDown</a></li><li><a href="global.html#moveButtonContainerUp">moveButtonContainerUp</a></li><li><a href="global.html#parseAnimationData">parseAnimationData</a></li><li><a href="global.html#playAnimation">playAnimation</a></li><li><a href="global.html#playAnimationPromise">playAnimationPromise</a></li><li><a href="global.html#playBGM">playBGM</a></li><li><a href="global.html#playTweenPromise">playTweenPromise</a></li><li><a href="global.html#reset">reset</a></li><li><a href="global.html#resetAfterDieFail">resetAfterDieFail</a></li><li><a href="global.html#resetBGM">resetBGM</a></li><li><a href="global.html#resetHP">resetHP</a></li><li><a href="global.html#resetValue">resetValue</a></li><li><a href="global.html#rollDieAnimation">rollDieAnimation</a></li><li><a href="global.html#setMaximumValue">setMaximumValue</a></li><li><a href="global.html#setStageZIndex">setStageZIndex</a></li><li><a href="global.html#setTimedSound">setTimedSound</a></li><li><a href="global.html#setValue">setValue</a></li><li><a href="global.html#setVisible">setVisible</a></li><li><a href="global.html#stopBGM">stopBGM</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.5</a> on Sun Aug 30 2020 21:40:42 GMT+0100 (British Summer Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

@@ -1,27 +1,45 @@
 import * as characterData from '../../assets/characterManifest.json';
-import * as backgroundManifest from '../../assets/backgroundManifest.json'
+import * as stageManifestData from '../../assets/backgroundManifest.json'
 
 import Character from "../engine/Character";
 import MenuPanel from '../ui/MenuPanel';
 import Stage from '../engine/Stage';
 import Button from '../ui/Button';
 
+/**
+ * @typedef {Object} MenuScene#InitialiseData
+ * @property {boolean} setToCharacterSelect - Whether or not to jump to the Character Select menu
+ */
+
+/**
+ * Scene containing the game menus
+ * @class MenuScene
+ * @extends Phaser.Scene
+ */
 class MenuScene extends Phaser.Scene {
+    /**
+     * @constructor
+     */
     constructor() {
         super({
             key: 'MenuScene'
         });
 
+        /** @type {Character} */
         this._player1 = null;
+        /** @type {Character} */
         this._player2 = null;
 
         this._player1Select = true;
 
+        /** @type {Stage#StageManifestData} */
         this._chosenStage = null;
+        /** @type {Stage} */
         this._stagePreview = null;
 
         this._skipToCharacterSelect = false;
 
+        /** @type {Phaser.GameObjects.TextStyle} */
         this._textStyle = {
             fontSize: '50px',
             fontFamily: 'Poppins',
@@ -29,6 +47,7 @@ class MenuScene extends Phaser.Scene {
             align: 'center'
         }
 
+        /** @type {Array.<string>} */
         this._creditTexts = [
             "BUILT BY TYRO THE FOX",
             "ORIGINAL SOFTWARE: GENERIC PLATFORMER AND PHASER BOOTSTRAP PROJECT - NICKLAS BERG",
@@ -41,8 +60,18 @@ class MenuScene extends Phaser.Scene {
 
         this._displayCredit = true;
         this._creditIndex = 0;
+
+        /** @type {Array.<Stage#StageManifestData>} */
+        this._stageManifestData = stageManifestData.default;
+
+        /** @type {CharacterDataLoader#CharacterManifestData} */
+        this._characterManifestData = characterData.default;
     }
 
+    /**
+     * Initialise the Stage
+     * @param {MenuScene#InitialiseData} data - Data used to initialise this scene
+     */
     init( data ) {
         if ( data.setToCharacterSelect ) {
             this._skipToCharacterSelect = true;
@@ -56,29 +85,33 @@ class MenuScene extends Phaser.Scene {
         this._displayCredit = true;
     }
 
-    preload() {
-
-    }
-
+    /**
+     * Creates scene required assets
+     */
     create() {
         let sh = this.game.config.height;
         let sw = this.game.config.width;
 
+        /** @type {{x: number, y: number}} */
         this._player1SpritePosition = {
             x: sw * 0.2,
             y: sh * 0.5
         }
 
+        /** @type {{x: number, y: number}} */
         this._player2SpritePosition = {
             x: sw * 0.8,
             y: sh * 0.5
         }
 
+        /** @type {{x: number, y: number}} */
         this._currentlySelectingPlayer = this._player1SpritePosition;
 
+        /** @type {Stage} */
         this._titleBackdrop = new Stage( this, 'Spiral', 'spiral' );
 
         // BACK BUTTON
+        /** @type {Button} */
         this._backButton = new Button(
             this,
             'button_Idle',
@@ -119,9 +152,11 @@ class MenuScene extends Phaser.Scene {
         this._backButton.setDepth( 10 );
         this._backButton.text.setDepth( 11 );
 
+        /** @type {Phaser.GameObjects.Sprite} */
         this._gameLogo = this.add.sprite( sw * 0.5, sh * 0.1, 'titleLogo' );
 
         // MAIN MENU
+        /** @type {MenuPanel} */
         this._mainMenu = new MenuPanel(
             this,
             'button_Idle',
@@ -182,6 +217,7 @@ class MenuScene extends Phaser.Scene {
         // MAIN MENU
 
         // CHARACTER SELECT
+        /** @type {MenuPanel} */
         this._characterMenu = new MenuPanel(
             this,
             'button_Idle',
@@ -209,7 +245,7 @@ class MenuScene extends Phaser.Scene {
             }
         );
 
-        characterData.default.forEach( ( character ) => {
+        this._characterManifestData.forEach( ( character ) => {
             this._characterMenu.addButton(
                 {
                     scale: {
@@ -302,6 +338,7 @@ class MenuScene extends Phaser.Scene {
         // CHARACTER SELECT
 
         // CONFIRM MENU
+        /** @type {MenuPanel} */
         this._confirmMenu = new MenuPanel(
             this,
             'button_Idle',
@@ -372,6 +409,7 @@ class MenuScene extends Phaser.Scene {
         // CONFIRM MENU
 
         // STAGE MENU
+        /** @type {MenuPanel} */
         this._stageMenu = new MenuPanel(
             this,
             'button_Idle',
@@ -399,7 +437,8 @@ class MenuScene extends Phaser.Scene {
             }
         );
 
-        backgroundManifest.default.forEach( ( stage ) => {
+        /** @type {Array.<Stage#StageManifestData>} */
+        this._stageManifestData.forEach( ( stage ) => {
             if ( stage.type === 'stage' ) {
                 this._stageMenu.addButton(
                     {
@@ -483,6 +522,7 @@ class MenuScene extends Phaser.Scene {
         this._stageMenu.setVisible( false );
         // STAGE MENU
 
+        /** @type {Phaser.GameObjects.Text} */
         this._creditText = this.add.text( sw * 0.05, sh * 0.95, this._creditTexts[0], {
             fontSize: '30px',
             fontFamily: 'Poppins',
@@ -506,6 +546,11 @@ class MenuScene extends Phaser.Scene {
         }
     }
 
+    /**
+     * Updates the scene every tick
+     * @param {number} time
+     * @param {number} delta
+     */
     update( time, delta ) {
         if ( this._characterMenu.visible ) {
             if ( this._upButton.state === 'down' ) {
@@ -541,6 +586,10 @@ class MenuScene extends Phaser.Scene {
         }
     }
 
+    /**
+     * Resets the scene back to the main menu
+     * @private
+     */
     _reset() {
         this._player1Select = true;
 
@@ -573,6 +622,10 @@ class MenuScene extends Phaser.Scene {
         this._creditText.visible = true;
     }
 
+    /**
+     * Sets the menu to the Character Select
+     * @private
+     */
     _setToCharacterSelect() {
         this._player1 = null;
         this._player2 = null;
@@ -586,6 +639,10 @@ class MenuScene extends Phaser.Scene {
         this._backButton.setVisible( true );
     }
 
+    /**
+     * Sets the menu to the Stage Select
+     * @private
+     */
     _resetToStageSelect() {
         if ( this._stagePreview ) {
             this._stagePreview.cleanUp();
@@ -599,6 +656,10 @@ class MenuScene extends Phaser.Scene {
         this._stageMenu.setVisible( true );
     }
 
+    /**
+     * Set to Player2 select
+     * @private
+     */
     _resetToPlayer2Select() {
         this._player2.destroy();
         this._player2 = null;
@@ -608,6 +669,10 @@ class MenuScene extends Phaser.Scene {
         this._currentlySelectingPlayer = this._player2SpritePosition;
     }
 
+    /**
+     * Set to Player 1 select
+     * @private
+     */
     _resetToPlayer1Select() {
         this._currentlySelectingPlayer = this._player1SpritePosition;
         this._player1Select = true;
@@ -615,10 +680,22 @@ class MenuScene extends Phaser.Scene {
         this._player1 = null;
     }
 
+    /**
+     * Generate a Character Object based on data
+     * @param {CharacterDataLoader#CharacterManifestEntry} characterData - Data that modifies the character
+     * @returns {Character}
+     * @private
+     */
     _getCharacterObject( characterData ) {
         return new Character( this, 100, 100, characterData.name, characterData.folderName, characterData.config || null );
     }
 
+    /**
+     * Generate a Stage Object based on data
+     * @param {Stage#StageManifestData} stageData
+     * @returns {Stage}
+     * @private
+     */
     _getStageObject( stageData ) {
         return new Stage( this, stageData.name, stageData.folderName );
     }

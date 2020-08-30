@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: ui/HealthBar.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: ui/HealthBar.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * @typedef {Object} HealthBar#Config
+ * @property {number|Object} [scale] - Scale values for the character sprites
+ * @property {number} x - X Co-ord value
+ * @property {number} y - Y Co-ord value
+ * @property {boolean} flip - Whether or not to flip the health bar to sit on the other side of the screen
+ * @property {boolean} invert - Inverts the assets to a secondary set for an alternative style and appearance
+ * @property {number} scale - Sets a scale for the whole of the health bar
+ * @property {string} characterName - Display name for the health bar
+ * @property {Phaser.GameObjects.TextStyle} textStyle - Text style applied to the character name
+ */
+
+/**
+ * Visual Element showing player health
+ * @class HealthBar
+ */
+export default class HealthBar {
+    /**
+     * @constructor
+     * @param {Phaser.Scene} scene - Scene context
+     * @param {number} maximumValue - Maximum value the bar represents
+     * @param {HealthBar#Config} config - Data to configure the health bar
+     */
+    constructor( scene, maximumValue, config ) {
+        /** @type {Phaser.Scene} */
+        this._scene = scene;
+        /** @type {number} */
+        this._maximumValue = maximumValue;
+        /** @type {number} */
+        this._currentValue = this._maximumValue;
+
+        this._x = config.x || 0;
+        this._y = config.y || 0;
+
+        this._flip = config.flip || false;
+        this._invert = config.invert || false;
+        this._scale = config.scale || 1;
+
+        if ( this._invert ) {
+            /** @type {Phaser.GameObjects.Sprite} */
+            this._background = this._scene.add.sprite( this._x, this._y, 'healthbar_backgroundInv' );
+            /** @type {Phaser.GameObjects.Sprite} */
+            this._redBar = this._scene.add.sprite( this._x, this._y, 'healthbar_barRed' );
+            /** @type {Phaser.GameObjects.Sprite} */
+            this._redBarMask = this._scene.add.sprite( this._x, this._y, 'healthbar_barRed' );
+            /** @type {Phaser.GameObjects.Sprite} */
+            this._bar = this._scene.add.sprite( this._x, this._y, 'healthbar_barInv' );
+            /** @type {Phaser.GameObjects.Sprite} */
+            this._mask = this._scene.add.sprite( this._x, this._y, 'healthbar_barInv' );
+        } else {
+            /** @type {Phaser.GameObjects.Sprite} */
+            this._background = this._scene.add.sprite( this._x, this._y, 'healthbar_background' );
+            /** @type {Phaser.GameObjects.Sprite} */
+            this._redBar = this._scene.add.sprite( this._x, this._y, 'healthbar_barRed' );
+            /** @type {Phaser.GameObjects.Sprite} */
+            this._redBarMask = this._scene.add.sprite( this._x, this._y, 'healthbar_barRed' );
+            /** @type {Phaser.GameObjects.Sprite} */
+            this._bar = this._scene.add.sprite( this._x, this._y, 'healthbar_bar' );
+            /** @type {Phaser.GameObjects.Sprite} */
+            this._mask = this._scene.add.sprite( this._x, this._y, 'healthbar_bar' );
+        }
+
+        if ( config.characterName &amp;&amp; config.textStyle ) {
+            const offset = this._flip ? 200 : -200;
+            this._flip ? config.textStyle.align = 'left' : config.textStyle.align = 'right';
+            this._characterName = this._scene.add.text( this._x + offset, this._y, config.characterName, config.textStyle );
+            this._characterName.x -= ( this._characterName.displayWidth / 2 );
+            this._characterName.y += ( this._characterName.displayHeight / 2 );
+            this._characterName.originY = 0;
+        }
+
+        /** @type {Phaser.Types.Tweens.TweenBuilderConfig} */
+        this._redBarTween = {
+            targets: this._redBarMask,
+            delay: 700,
+            duration: 300,
+            ease: 'Power2'
+        };
+
+        this._background.setFlipX( this._flip );
+        this._background.setScale( this._scale );
+
+        this._redBar.setFlipX( this._flip );
+        this._redBar.setScale( this._scale );
+
+        this._redBarMask.setFlipX( this._flip );
+        this._redBarMask.setScale( this._scale );
+
+        this._bar.setFlipX( this._flip );
+        this._bar.setScale( this._scale );
+
+        this._mask.setFlipX( this._flip );
+        this._mask.setScale( this._scale );
+
+        this._redBarMask.visible = false;
+        this._redBar.mask = this._redBarMask.createBitmapMask();
+
+        this._mask.visible = false;
+        this._bar.mask = this._mask.createBitmapMask();
+
+        this._stepWidth = this._mask.displayWidth / this._maximumValue;
+    }
+
+    get currentValue() {
+        return this._currentValue;
+    }
+
+    /**
+     * Sets the current value of the bar
+     * @param {number} value - Value to set to
+     */
+    setValue( value ) {
+        if ( value > this._maximumValue ) {
+            this._currentValue = this._maximumValue;
+        } else if ( value &lt; 0 ) {
+            this._currentValue = 0;
+        } else {
+            this._currentValue = value;
+        }
+        this._updateBar();
+    }
+
+    /**
+     * Change the current value of the bar by, not to, the given value
+     * @param {number} value - The Value modified by
+     */
+    modifyValue( value ) {
+        if ( ( this._currentValue + value ) > this._maximumValue ) {
+            this._currentValue = this._maximumValue;
+        } else if ( ( this._currentValue + value ) &lt; 0 ) {
+            this._currentValue = 0;
+        } else {
+            this._currentValue += value;
+        }
+        this._updateBar();
+    }
+
+    /**
+     * Resets value to the given maximum
+     */
+    resetValue() {
+        this._currentValue = this._maximumValue;
+        this._updateBar();
+    }
+
+    /**
+     * Set the maximum value to something new
+     * @param {number} value - Value to set to
+     */
+    setMaximumValue( value ) {
+        this._maximumValue = value;
+        this._updateBar();
+    }
+
+    /**
+     * Updates the size of the bar values to match the current and maximum values
+     * @private
+     */
+    _updateBar() {
+        if ( this._flip ) {
+            this._mask.x = this._x + ( ( this._maximumValue - this._currentValue ) * this._stepWidth );
+        } else {
+            this._mask.x = this._x - ( ( this._maximumValue - this._currentValue ) * this._stepWidth );
+        }
+
+        this._redBarTween.x = this._mask.x;
+        this._scene.tweens.add( this._redBarTween );
+    }
+}
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="BootScene.html">BootScene</a></li><li><a href="Button.html">Button</a></li><li><a href="Character.html">Character</a></li><li><a href="CharacterDataLoader.html">CharacterDataLoader</a></li><li><a href="DieSprite.html">DieSprite</a></li><li><a href="FightScene.html">FightScene</a></li><li><a href="HealthBar.html">HealthBar</a></li><li><a href="MenuPanel.html">MenuPanel</a></li><li><a href="MenuScene.html">MenuScene</a></li><li><a href="module.exports_module.exports.html">exports</a></li><li><a href="OptionsScene.html">OptionsScene</a></li><li><a href="Stage.html">Stage</a></li><li><a href="StageDataLoader.html">StageDataLoader</a></li><li><a href="TitleScene.html">TitleScene</a></li></ul><h3>Global</h3><ul><li><a href="global.html#addButton">addButton</a></li><li><a href="global.html#addDamage">addDamage</a></li><li><a href="global.html#addMenuControlButton">addMenuControlButton</a></li><li><a href="global.html#buttonCount">buttonCount</a></li><li><a href="global.html#cleanUp">cleanUp</a></li><li><a href="global.html#config">config</a></li><li><a href="global.html#createAllCharacters">createAllCharacters</a></li><li><a href="global.html#createAllStages">createAllStages</a></li><li><a href="global.html#dieFailAnimation">dieFailAnimation</a></li><li><a href="global.html#enterButtonActiveState">enterButtonActiveState</a></li><li><a href="global.html#enterButtonHoverState">enterButtonHoverState</a></li><li><a href="global.html#enterButtonRestState">enterButtonRestState</a></li><li><a href="global.html#game">game</a></li><li><a href="global.html#getAllCharacterData">getAllCharacterData</a></li><li><a href="global.html#getAllStageData">getAllStageData</a></li><li><a href="global.html#HP">HP</a></li><li><a href="global.html#loadAnimationData">loadAnimationData</a></li><li><a href="global.html#loadAtlas">loadAtlas</a></li><li><a href="global.html#loadEmitterData">loadEmitterData</a></li><li><a href="global.html#loadImage">loadImage</a></li><li><a href="global.html#loadImageComponent">loadImageComponent</a></li><li><a href="global.html#loadImageList">loadImageList</a></li><li><a href="global.html#loadSoundData">loadSoundData</a></li><li><a href="global.html#loadSpriteSheet">loadSpriteSheet</a></li><li><a href="global.html#loadUnityAtlas">loadUnityAtlas</a></li><li><a href="global.html#modifyValue">modifyValue</a></li><li><a href="global.html#moveButtonContainerDown">moveButtonContainerDown</a></li><li><a href="global.html#moveButtonContainerUp">moveButtonContainerUp</a></li><li><a href="global.html#parseAnimationData">parseAnimationData</a></li><li><a href="global.html#playAnimation">playAnimation</a></li><li><a href="global.html#playAnimationPromise">playAnimationPromise</a></li><li><a href="global.html#playBGM">playBGM</a></li><li><a href="global.html#playTweenPromise">playTweenPromise</a></li><li><a href="global.html#reset">reset</a></li><li><a href="global.html#resetAfterDieFail">resetAfterDieFail</a></li><li><a href="global.html#resetBGM">resetBGM</a></li><li><a href="global.html#resetHP">resetHP</a></li><li><a href="global.html#resetValue">resetValue</a></li><li><a href="global.html#rollDieAnimation">rollDieAnimation</a></li><li><a href="global.html#setMaximumValue">setMaximumValue</a></li><li><a href="global.html#setStageZIndex">setStageZIndex</a></li><li><a href="global.html#setTimedSound">setTimedSound</a></li><li><a href="global.html#setValue">setValue</a></li><li><a href="global.html#setVisible">setVisible</a></li><li><a href="global.html#stopBGM">stopBGM</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.5</a> on Sun Aug 30 2020 21:40:42 GMT+0100 (British Summer Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

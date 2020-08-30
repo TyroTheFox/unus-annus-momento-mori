@@ -3,7 +3,7 @@
         "frameRate": 14,
         "repeat": -1
     },
-    "frameConfig": {
+    "frameData": {
         "prefix": "crowdmember/CrowdMember",
         "suffix": ".png",
         "zeroPad": 0,

@@ -1,0 +1,9 @@
+{
+    "source": {
+        "include": [
+            "src/engine",
+            "src/scenes",
+            "src/ui"
+        ]
+    }
+}

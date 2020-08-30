@@ -4,18 +4,70 @@ import * as soundsData from '../../assets/soundManifest.json';
 import * as particleData from '../../assets/particleManifest.json';
 
 import CharacterDataLoader from "../engine/CharacterDataLoader";
-import BackgroundDataLoader from "../engine/BackgroundDataLoader";
+import StageDataLoader from "../engine/StageDataLoader";
 
+/**
+ * @typedef {Object} DefaultOptions
+ * @property {number} HP - Initial HP value
+ * @property {number} damage - Attack damage value
+ * @property {number} crit - Crital Attack Damage value
+ */
+
+/**
+ * @typedef {DefaultOptions} GameOptions
+ * @property {number} musicVolume - Volume of all in-game music
+ * @property {number} sfxVolume - Volume of all in-game sound effects
+ */
+
+/**
+ * @typedef {Object} BootScene#SoundsManifestData
+ * @property {string} name - Name the data will be cached under
+ * @property {string} path - Relative path to the sound, starting at the 'audio' asset folder
+ */
+
+/**
+ * @typedef {Object} BootScene#ParticleData
+ * @property type - type of asset being used to create a particle
+ * @property path - Relative path leading to the particle asset, starting at the 'emitter' asset folder
+ */
+
+/**
+ * @typedef {Object} BootScene#ParticleManifestData
+ * @property {string} name - Name the asset will be cached under
+ * @property {BootScene#ParticleData} particles - Data for the individual particle asset
+ */
+
+/**
+ * Loads all game assets needed for the game
+ * @class BootScene
+ * @extends Phaser.Scene
+ */
 class BootScene extends Phaser.Scene {
-    constructor(test) {
+    /**
+     * @constructor
+     */
+    constructor() {
         super({
             key: 'BootScene'
         });
 
+        /** @type {CharacterDataLoader} */
         this._characterLoader = new CharacterDataLoader( this );
-        this._backgroundDataLoader = new BackgroundDataLoader( this );
+        /** @type {StageDataLoader} */
+        this._stageDataLoader = new StageDataLoader( this );
+
+        /** @type {Array.<BootScene#SoundsManifestData>} */
+        this._soundsData = soundsData.default;
+
+        /** @type {Array.<BootScene#ParticleManifestData>} */
+        this._particleData = particleData.default;
     }
 
+    /**
+     * Initialises the scene
+     *
+     * @override
+     */
     init() {
         //  Inject our CSS
         const element = document.createElement('style');
@@ -35,6 +87,10 @@ class BootScene extends Phaser.Scene {
         } )
     }
 
+    /**
+     * Loads assets before use in the program
+     * @override
+     */
     preload() {
         const progress = this.add.graphics();
 
@@ -69,9 +125,9 @@ class BootScene extends Phaser.Scene {
 
         this._characterLoader.getAllCharacterData();
 
-        this._backgroundDataLoader.getAllStageData();
+        this._stageDataLoader.getAllStageData();
 
-        soundsData.default.forEach( ( sound ) => {
+        this._soundsData.forEach( ( sound ) => {
             this.load.audio( sound.name, `assets/audio/${sound.path}` )
         } );
 
@@ -96,7 +152,7 @@ class BootScene extends Phaser.Scene {
         this.load.image('personIcon', 'assets/button/person.png');
         this.load.image('swordIcon', 'assets/button/sword.png');
 
-        particleData.default.forEach( ( emitter ) => {
+        this._particleData.forEach( ( emitter ) => {
             if ( emitter.particles.type === 'texture' ) {
                 this.load.image( emitter.name, `assets/emitter/${emitter.particles.path}` );
             } else if ( emitter.particles.type === 'atlas') {
@@ -106,9 +162,13 @@ class BootScene extends Phaser.Scene {
         } );
     }
 
+    /**
+     * Creates game objects out of the loaded assets
+     * @override
+     */
     create() {
         this._characterLoader.createAllCharacters();
-        this._backgroundDataLoader.createAllStages();
+        this._stageDataLoader.createAllStages();
     }
 }
 

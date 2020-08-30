@@ -7,6 +7,11 @@ import MenuScene from './scenes/MenuScene';
 import OptionsScene from './scenes/OptionsScene'
 
 // For more settings see <https://github.com/photonstorm/phaser/blob/master/src/boot/Config.js>
+
+/**
+ * Game Config
+ * @type {Phaser.Types.Core.GameConfig}
+ */
 const config = {
     type: Phaser.WEBGL,
     pixelArt: true,
@@ -32,4 +37,5 @@ const config = {
     ]
 };
 
+/** @type {Phaser.Game} */
 const game = new Phaser.Game(config); // eslint-disable-line no-unused-vars

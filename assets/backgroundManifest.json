@@ -5,6 +5,7 @@
         "components": [
             {
                 "name": "backdrop",
+                "importMethod": "atlas",
                 "position": "center",
                 "scale": 4,
                 "animated": true
@@ -35,12 +36,14 @@
         "components": [
             {
                 "name": "backdrop",
+                "importMethod": "atlas",
                 "position": "center",
                 "scale": 4,
                 "animated": true
             },
             {
                 "name": "floor",
+                "importMethod": "image",
                 "position": "absolute",
                 "x": "center",
                 "y": 700,
@@ -73,12 +76,14 @@
         "components": [
             {
                 "name": "background",
+                "importMethod": "image",
                 "position": "center",
                 "scale": 0.75,
                 "animated": false
             },
             {
                 "id": "row5",
+                "importMethod": "atlas",
                 "name": "crowdmember",
                 "position": "absolute",
                 "x": 100,
@@ -96,6 +101,7 @@
             },
             {
                 "id": "row4",
+                "importMethod": "atlas",
                 "name": "crowdmember",
                 "position": "absolute",
                 "x": 150,
@@ -113,6 +119,7 @@
             },
             {
                 "id": "row3",
+                "importMethod": "atlas",
                 "name": "crowdmember",
                 "position": "absolute",
                 "x": 100,
@@ -130,6 +137,7 @@
             },
             {
                 "id": "row2",
+                "importMethod": "atlas",
                 "name": "crowdmember",
                 "position": "absolute",
                 "x": 150,
@@ -147,6 +155,7 @@
             },
             {
                 "id": "row1",
+                "importMethod": "atlas",
                 "name": "crowdmember",
                 "position": "absolute",
                 "x": 100,
@@ -163,24 +172,28 @@
             },
             {
                 "name": "ring",
+                "importMethod": "image",
                 "position": "center",
                 "scale": 0.75,
                 "animated": false
             },
             {
                 "name": "floodlight1",
+                "importMethod": "image",
                 "position": "center",
                 "scale": 0.75,
                 "animated": false
             },
             {
                 "name": "floodlight2",
+                "importMethod": "image",
                 "position": "center",
                 "scale": 0.75,
                 "animated": false
             },
             {
                 "name": "floodlightray1",
+                "importMethod": "image",
                 "position": "absolute",
                 "x": "center",
                 "y": "center",
@@ -189,6 +202,7 @@
             },
             {
                 "name": "floodlightray2",
+                "importMethod": "image",
                 "position": "absolute",
                 "x": "center",
                 "y": "center",

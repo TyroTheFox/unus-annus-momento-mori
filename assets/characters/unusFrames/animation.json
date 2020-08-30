@@ -1,0 +1,106 @@
+[
+    {
+        "animData": {
+            "key": "attack",
+            "frameRate": 12,
+            "frames": [
+                { "key": "attack0" },
+                { "key": "attack1" },
+                { "key": "attack2" },
+                { "key": "attack3" },
+                { "key": "attack4" },
+                { "key": "attack5" },
+                { "key": "attack6" },
+                { "key": "attack7" },
+                { "key": "attack8" },
+                { "key": "attack9" },
+                { "key": "attack10" },
+                { "key": "attack11" },
+                { "key": "attack12" },
+                { "key": "attack13" },
+                { "key": "attack14" },
+                { "key": "attack15" },
+                { "key": "attack16" },
+                { "key": "attack17" },
+                { "key": "attack18" },
+                { "key": "attack19" },
+                { "key": "attack20" },
+                { "key": "attack21" },
+                { "key": "attack22" }
+            ]
+        }
+    },
+    {
+        "animData": {
+            "key": "damage",
+            "frameRate": 12,
+            "frames": [
+                { "key": "damage0" },
+                { "key": "damage1" },
+                { "key": "damage2" }
+            ]
+        }
+    },
+    {
+        "animData": {
+            "key": "defeat",
+            "frameRate": 12,
+            "frames": [
+                { "key": "defeat0" },
+                { "key": "defeat1" },
+                { "key": "defeat2" },
+                { "key": "defeat3" },
+                { "key": "defeat4" },
+                { "key": "defeat5" },
+                { "key": "defeat6" },
+                { "key": "defeat7" },
+                { "key": "defeat8" },
+                { "key": "defeat9" },
+                { "key": "defeat10" },
+                { "key": "defeat11" },
+                { "key": "defeat12" },
+                { "key": "defeat13" },
+                { "key": "defeat14" },
+                { "key": "defeat15" },
+                { "key": "defeat16" },
+                { "key": "defeat17" },
+                { "key": "defeat18" }
+            ]
+        }
+    },
+    {
+        "animData": {
+            "key": "idle",
+            "frameRate": 12,
+            "frames": [
+                { "key": "idle0" }
+            ]
+        }
+    },
+    {
+        "animData": {
+            "key": "victory",
+            "frameRate": 12,
+            "frames": [
+                { "key": "victory0" },
+                { "key": "victory1" },
+                { "key": "victory2" },
+                { "key": "victory3" },
+                { "key": "victory4" },
+                { "key": "victory5" },
+                { "key": "victory6" },
+                { "key": "victory7" },
+                { "key": "victory8" },
+                { "key": "victory9" },
+                { "key": "victory10" },
+                { "key": "victory11" },
+                { "key": "victory12" },
+                { "key": "victory13" },
+                { "key": "victory14" },
+                { "key": "victory15" },
+                { "key": "victory16" },
+                { "key": "victory17" }
+            ]
+        }
+    }
+]

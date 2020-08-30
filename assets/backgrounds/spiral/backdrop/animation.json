@@ -3,7 +3,7 @@
         "frameRate": 30,
         "repeat": -1
     },
-    "frameConfig": {
+    "frameData": {
         "prefix": "backdrop/frame_",
         "suffix": ".png",
         "zeroPad": 2,

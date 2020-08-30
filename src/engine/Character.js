@@ -1,83 +1,180 @@
+/**
+ * @typedef {Object} Character#CharacterConfig
+ * @property {number|Object} [scale] - Scale values for the character sprites
+ * @property {number} [scale.x] - X Scale value
+ * @property {number} [scale.y] - Y Scale value
+ * @property {number} [alpha] - Alpha value
+ * @property {Object} [anchor] - Anchor value for the sprite
+ * @property {number} anchor.x - X anchor value
+ * @property {number} anchor.y - Y anchor value
+ * @property {string} blendMode - Name of a phaser blend mode
+ */
+
+/**
+ * @typedef {Object} Character#SoundData
+ * @property {string} sfx - Name the sound effect is cached under
+ * @property {string} frame - The animation frame the sound should play on
+ * @property {string} time - The delay the sound should play after, starting from when the animation starts playing
+ */
+
+/**
+ * @typedef {Object} Character#SoundEffectDataList
+ * @property {{key: string, data:Array.<Character#SoundData>}} timing - Object for handling the timing of when the sound should play
+ */
+
+/**
+ * @typedef {Character#SoundData} Character#SoundEffect
+ * @property {Phaser.Sound.BaseSound} sound - The sound object for the sound effect
+ */
+
+/**
+ * @typedef {{key: string, soundData: Character#SoundEffect}} Character#SoundEffectsRegister
+ */
+
+/**
+ * @typedef {Object} Character#EmitterData
+ * @property {string} name - Name of the particle asset in the cache
+ * @property {string} action - Associated action the particle should fire on
+ * @property {Phaser.Types.GameObjects.Particles.ParticleEmitterConfig} [config] - Emitter config
+ * @property {string} duration - How long the emitter should fire for
+ * @property {number} [frame] - The frame that an emitter should fire on for its given animation
+ * @property {number} [time] - The delay before firing after the associated action is made
+ * @property {Phaser.GameObjects.GameObject} target - Who to fire the particle over; the opponent or this character
+ */
+
+/**
+ * @typedef {Array.<Character#EmitterData>} Character#EmitterDataList
+ */
+
+/**
+ * @typedef {Character#EmitterData} Character#Emitter
+ * @property {Phaser.GameObjects.Particles.ParticleEmitter} emitter - Emitter object
+ */
+
+/**
+ * @typedef {{key: string, emitterData: Character#Emitter}} Character#EmitterRegister
+ */
+
+/**
+ * Characters players can play as
+ * @class Character
+ * @extends Phaser.GameObjects.Sprite
+ */
 export default class Character extends Phaser.GameObjects.Sprite {
+
+    /**
+     * @constructor
+     * @param {Phaser.Scene} scene - Scene Context
+     * @param {number} x - X co-ord
+     * @param {number} y - Y co-ord
+     * @param {string} characterName - Displayed Character Name
+     * @param {string} folderName - Name of Data Folder, used to find cached data
+     * @param {Character#CharacterConfig} config - Configuration object
+     */
     constructor( scene, x, y, characterName, folderName, config = null ) {
         super( scene, x, y, characterName );
         this.characterName = characterName;
         this.folderName = folderName;
+
+        /** @type {Character#CharacterConfig} */
         this.config = config;
 
         this.anims.play( `idle-${this.folderName}` );
 
         this.scene.registry.events.on('changedata', this._updateData, this);
 
+        /** @type {GameOptions} */
         this._optionsData = this.scene.registry.get( '__GameOptionsData' );
 
+        /**
+         * Maximum HP value
+         * @type {number}
+         * @private
+         */
         this._maxHP = this._optionsData.HP;
         this._damage = 0;
 
         this.scene.add.existing( this );
 
+        /** @type{Character#SoundEffectsRegister} */
         this._sfx = {};
         this._sfxVolume = this._optionsData.sfxVolume;
 
+        /** @type{Character#EmitterRegister} */
         this._emitters = {};
         this.emitterTarget = this;
 
+        /** @type {Character#SoundEffectDataList} */
         const soundsData = this.scene.game.cache.json.get( `sfx_${folderName}` );
 
-        for ( const [ animKey, data ] of Object.entries( soundsData.timing ) ) {
-            data.forEach( ( sfxData ) => {
-                let sfx = null;
+        if ( soundsData ) {
+            for ( const [animKey, data] of Object.entries( soundsData.timing ) ) {
+                data.forEach( ( sfxData ) => {
+                    /** @type {?Phaser.Sound.BaseSound} */
+                    let sfx = null;
 
-                if ( this._sfx.hasOwnProperty( animKey ) ) {
-                    const sound = this._sfx[animKey].find( ( sound ) => {
-                        if ( sound.key ) {
-                            return sound.key === sfxData.sfx;
+                    if (this._sfx.hasOwnProperty(animKey)) {
+                        /** @type {?Character#SoundEffect} */
+                        const sound = this._sfx[animKey].find( ( sound ) => {
+                            if ( sound.key ) {
+                                return sound.key === sfxData.sfx;
+                            } else {
+                                return false;
+                            }
+                        });
+
+                        if ( sound ) {
+                            sfx = sound;
                         } else {
-                            return false;
+                            sfx = this.scene.sound.add( sfxData.sfx );
                         }
-                    } );
-
-                    if ( sound ) {
-                        sfx = sound;
                     } else {
                         sfx = this.scene.sound.add( sfxData.sfx );
+                        this._sfx[animKey] = [];
                     }
-                } else {
-                    sfx = this.scene.sound.add( sfxData.sfx );
-                    this._sfx[animKey] = [];
-                }
 
-                const soundData = {
-                    ...sfxData,
-                    sound: sfx
-                }
+                    /** @type {Character#SoundEffect} */
+                    const soundData = {
+                        ...sfxData,
+                        sound: sfx
+                    }
 
-                this._sfx[animKey].push( soundData );
-            } );
+                    this._sfx[animKey].push(soundData);
+                });
+            }
         }
 
+        /** @type {Character#EmitterDataList} */
         const emitterData = this.scene.game.cache.json.get( `emitter_${folderName}` );
 
-        for ( const data of emitterData ) {
-            const particles = this.scene.add.particles( data.name );
-            particles.setDepth( 10 );
+        if ( emitterData ) {
+            for (const data of emitterData) {
+                const { name, action, config } = data;
 
-            const emitter = particles.createEmitter( data.config );
-            emitter.stop();
+                const particles = this.scene.add.particles( name );
+                particles.setDepth(10);
 
-            if ( !this._emitters.hasOwnProperty( data.action ) ) {
-                this._emitters[data.action] = [];
+                const emitter = particles.createEmitter( config );
+                emitter.stop();
+
+                if ( !this._emitters.hasOwnProperty( action ) ) {
+                    this._emitters[action] = [];
+                }
+
+                this._emitters[action].push({
+                    emitter: emitter,
+                    ...data
+                });
             }
-
-            this._emitters[data.action].push( {
-                emitter: emitter,
-                ...data
-            } );
         }
 
         if ( this.config ) {
             if ( this.config.scale ) {
-                this.setScale( this.config.scale );
+                if ( this.config.scale.x || this.config.scale.y ) {
+                    this.setScale( this.config.scale.x || 1, this.config.scale.y || 1 );
+                } else {
+                    this.setScale( this.config.scale );
+                }
             }
 
             if ( this.config.alpha ) {
@@ -98,18 +195,35 @@ export default class Character extends Phaser.GameObjects.Sprite {
         return this._maxHP;
     }
 
+    /**
+     * Current HP Value
+     * @type {number}
+     */
     get HP () {
         return this._maxHP - this._damage;
     }
 
+    /**
+     * Resets HP to maximum
+     */
     resetHP () {
         this._damage = 0;
     }
 
+    /**
+     * Inflicts damage on the character
+     * @param {number} value - Amount of damage to give
+     */
     addDamage ( value ) {
         this._damage += value;
     }
 
+    /**
+     * Promisified version of playing an animation
+     * @param {string} key - Name of animation to play
+     * @param {boolean} [emitterOverride=false] - Whether any emitters should target the opponent or fire in the middle of the player and the target
+     * @returns {Promise}
+     */
     playAnimationPromise( key, emitterOverride = false ) {
         this.playAnimation( key, emitterOverride );
         const that = this;
@@ -127,6 +241,11 @@ export default class Character extends Phaser.GameObjects.Sprite {
         } );
     }
 
+    /**
+     * Plays a given animation
+     * @param {string} key - Name of animation to play
+     * @param {boolean} [emitterOverride=false] - Whether any emitters should target the opponent or fire in the middle of the player and the target
+     */
     playAnimation( key, emitterOverride = false ) {
         this.anims.play( `${key}-${this.folderName}` );
 
@@ -152,27 +271,30 @@ export default class Character extends Phaser.GameObjects.Sprite {
                             let offsetX = 0;
                             let offsetY = 0;
 
-                            if ( emitterOverride ) {
-                                const line = new Phaser.Geom.Line(
-                                    this.x, this.y,
-                                    this.emitterTarget.x, this.emitterTarget.y
-                                );
-                                const midPoint = Phaser.Geom.Line.GetMidPoint(line);
-                                emitterData.emitter.setPosition( midPoint.x, midPoint.y );
-                            } else {
-                                if ( emitterData.target ) {
-                                    if ( emitterData.target === 'enemy' ) {
+                            if ( emitterData.target ) {
+                                if ( emitterData.target === 'enemy' ) {
+                                    if ( emitterOverride ) {
+                                        const line = new Phaser.Geom.Line(
+                                            this.x, this.y,
+                                            this.emitterTarget.x, this.emitterTarget.y
+                                        );
+                                        const midPoint = Phaser.Geom.Line.GetMidPoint(line);
+                                        emitterData.emitter.setPosition( midPoint.x, midPoint.y );
+                                    } else {
                                         followTarget = this.emitterTarget;
-                                    } else if ( emitterData.target === 'self' ) {
-                                        followTarget = this;
                                     }
+                                } else if ( emitterData.target === 'self' ) {
+                                    followTarget = this;
                                 }
-                                if ( emitterData.offset ) {
+                            }
+                            if ( !emitterOverride ) {
+                                if (emitterData.offset) {
                                     offsetX = emitterData.offset.x || 0;
                                     offsetY = emitterData.offset.y || 0;
                                 }
-                                emitterData.emitter.startFollow( followTarget, offsetX, offsetY );
+                                emitterData.emitter.startFollow(followTarget, offsetX, offsetY);
                             }
+
                             emitterData.emitter.start();
                             this.scene.time.delayedCall( emitterData.duration, () => {
                                 emitterData.emitter.stop();
@@ -185,6 +307,10 @@ export default class Character extends Phaser.GameObjects.Sprite {
         }, this );
     }
 
+    /**
+     * Sets an sound or emitter effect to fire after a given delay
+     * @param {string} key - An animation key to check
+     */
     setTimedSound( key ) {
         if ( this._sfx.hasOwnProperty( key ) ) {
             for (const sfxData of this._sfx[key] ) {
@@ -217,6 +343,14 @@ export default class Character extends Phaser.GameObjects.Sprite {
         }
     }
 
+    /**
+     * Updates stat and volume values once options data changes
+     * @listens Phaser.Data.Events#CHANGE_DATA
+     * @param {any} parent - A reference to the object that the Data Manager responsible for this event belongs to
+     * @param {string} key - The unique key of the data item within the Data Manager
+     * @param {any} data - The new value of the item in the Data Manager
+     * @private
+     */
     _updateData(parent, key, data)
     {
         if (key === '__GameOptionsData')

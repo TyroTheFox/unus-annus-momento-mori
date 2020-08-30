@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: scenes/BootScene.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: scenes/BootScene.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import WebFont from 'webfontloader';
+
+import * as soundsData from '../../assets/soundManifest.json';
+import * as particleData from '../../assets/particleManifest.json';
+
+import CharacterDataLoader from "../engine/CharacterDataLoader";
+import StageDataLoader from "../engine/StageDataLoader";
+
+/**
+ * @typedef {Object} DefaultOptions
+ * @property {number} HP - Initial HP value
+ * @property {number} damage - Attack damage value
+ * @property {number} crit - Crital Attack Damage value
+ */
+
+/**
+ * @typedef {DefaultOptions} GameOptions
+ * @property {number} musicVolume - Volume of all in-game music
+ * @property {number} sfxVolume - Volume of all in-game sound effects
+ */
+
+/**
+ * @typedef {Object} BootScene#SoundsManifestData
+ * @property {string} name - Name the data will be cached under
+ * @property {string} path - Relative path to the sound, starting at the 'audio' asset folder
+ */
+
+/**
+ * @typedef {Object} BootScene#ParticleData
+ * @property type - type of asset being used to create a particle
+ * @property path - Relative path leading to the particle asset, starting at the 'emitter' asset folder
+ */
+
+/**
+ * @typedef {Object} BootScene#ParticleManifestData
+ * @property {string} name - Name the asset will be cached under
+ * @property {BootScene#ParticleData} particles - Data for the individual particle asset
+ */
+
+/**
+ * Loads all game assets needed for the game
+ * @class BootScene
+ * @extends Phaser.Scene
+ */
+class BootScene extends Phaser.Scene {
+    /**
+     * @constructor
+     */
+    constructor() {
+        super({
+            key: 'BootScene'
+        });
+
+        /** @type {CharacterDataLoader} */
+        this._characterLoader = new CharacterDataLoader( this );
+        /** @type {StageDataLoader} */
+        this._stageDataLoader = new StageDataLoader( this );
+
+        /** @type {Array.&lt;BootScene#SoundsManifestData>} */
+        this._soundsData = soundsData.default;
+
+        /** @type {Array.&lt;BootScene#ParticleManifestData>} */
+        this._particleData = particleData.default;
+    }
+
+    /**
+     * Initialises the scene
+     *
+     * @override
+     */
+    init() {
+        //  Inject our CSS
+        const element = document.createElement('style');
+
+        document.head.appendChild(element);
+
+        const sheet = element.sheet;
+
+        const styles = '@font-face { font-family: "Poppins"; src: url("assets/fonts/Poppins-Bold.ttf") format("truetype"); }\n';
+
+        sheet.insertRule(styles, 0);
+
+        WebFont.load( {
+            custom: {
+                families: [ 'Poppins' ]
+            }
+        } )
+    }
+
+    /**
+     * Loads assets before use in the program
+     * @override
+     */
+    preload() {
+        const progress = this.add.graphics();
+
+        // Register a load progress event to show a load bar
+        this.load.on('progress', (value) => {
+            progress.clear();
+            progress.fillStyle(0xffffff, 1);
+            progress.fillRect(0, this.sys.game.config.height / 2, this.sys.game.config.width * value, 60);
+        });
+
+        // Register a load complete event to launch the title screen when all files are loaded
+        this.load.on('complete', () => {
+            // prepare all animations, defined in a separate file
+            // makeAnimations(this);
+            progress.destroy();
+            this.scene.start('TitleScene');
+        });
+
+        this.registry.set( '__GameOptionsDefaultData', {
+            HP: 5,
+            damage: 1,
+            crit: 5
+        } );
+
+        this.registry.set( '__GameOptionsData', {
+            HP: 5,
+            damage: 1,
+            crit: 5,
+            musicVolume: 0.25,
+            sfxVolume: 1
+        } );
+
+        this._characterLoader.getAllCharacterData();
+
+        this._stageDataLoader.getAllStageData();
+
+        this._soundsData.forEach( ( sound ) => {
+            this.load.audio( sound.name, `assets/audio/${sound.path}` )
+        } );
+
+        this.load.image('healthbar_background', 'assets/healthbar/healthbar_background.png');
+        this.load.image('healthbar_bar', 'assets/healthbar/healthbar_bar.png');
+
+        this.load.image('healthbar_backgroundInv', 'assets/healthbar/healthbar_backgroundInv.png');
+        this.load.image('healthbar_barInv', 'assets/healthbar/healthbar_barInv.png');
+
+        this.load.image('healthbar_barRed', 'assets/healthbar/healthbar_barRed.png');
+
+        this.load.image('button_Idle', 'assets/button/button_0.png');
+        this.load.image('button_Over', 'assets/button/button_2.png');
+        this.load.image('button_Down', 'assets/button/button_1.png');
+
+        this.load.image('titleLogo', 'assets/images/UAMMTitle.png');
+
+        this.load.image('dieSprite', 'assets/images/diesprite.png');
+
+        this.load.image('backIcon', 'assets/button/back.png');
+        this.load.image('optionsIcon', 'assets/button/options.png');
+        this.load.image('personIcon', 'assets/button/person.png');
+        this.load.image('swordIcon', 'assets/button/sword.png');
+
+        this._particleData.forEach( ( emitter ) => {
+            if ( emitter.particles.type === 'texture' ) {
+                this.load.image( emitter.name, `assets/emitter/${emitter.particles.path}` );
+            } else if ( emitter.particles.type === 'atlas') {
+                this.load.atlas( emitter.name,
+                    `assets/emitter/${emitter.particles.path}`, `assets/emitter/${emitter.particles.json}`);
+            }
+        } );
+    }
+
+    /**
+     * Creates game objects out of the loaded assets
+     * @override
+     */
+    create() {
+        this._characterLoader.createAllCharacters();
+        this._stageDataLoader.createAllStages();
+    }
+}
+
+export default BootScene;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="BootScene.html">BootScene</a></li><li><a href="Button.html">Button</a></li><li><a href="Character.html">Character</a></li><li><a href="CharacterDataLoader.html">CharacterDataLoader</a></li><li><a href="DieSprite.html">DieSprite</a></li><li><a href="FightScene.html">FightScene</a></li><li><a href="HealthBar.html">HealthBar</a></li><li><a href="MenuPanel.html">MenuPanel</a></li><li><a href="MenuScene.html">MenuScene</a></li><li><a href="module.exports_module.exports.html">exports</a></li><li><a href="OptionsScene.html">OptionsScene</a></li><li><a href="Stage.html">Stage</a></li><li><a href="StageDataLoader.html">StageDataLoader</a></li><li><a href="TitleScene.html">TitleScene</a></li></ul><h3>Global</h3><ul><li><a href="global.html#addButton">addButton</a></li><li><a href="global.html#addDamage">addDamage</a></li><li><a href="global.html#addMenuControlButton">addMenuControlButton</a></li><li><a href="global.html#buttonCount">buttonCount</a></li><li><a href="global.html#cleanUp">cleanUp</a></li><li><a href="global.html#config">config</a></li><li><a href="global.html#createAllCharacters">createAllCharacters</a></li><li><a href="global.html#createAllStages">createAllStages</a></li><li><a href="global.html#dieFailAnimation">dieFailAnimation</a></li><li><a href="global.html#enterButtonActiveState">enterButtonActiveState</a></li><li><a href="global.html#enterButtonHoverState">enterButtonHoverState</a></li><li><a href="global.html#enterButtonRestState">enterButtonRestState</a></li><li><a href="global.html#game">game</a></li><li><a href="global.html#getAllCharacterData">getAllCharacterData</a></li><li><a href="global.html#getAllStageData">getAllStageData</a></li><li><a href="global.html#HP">HP</a></li><li><a href="global.html#loadAnimationData">loadAnimationData</a></li><li><a href="global.html#loadAtlas">loadAtlas</a></li><li><a href="global.html#loadEmitterData">loadEmitterData</a></li><li><a href="global.html#loadImage">loadImage</a></li><li><a href="global.html#loadImageComponent">loadImageComponent</a></li><li><a href="global.html#loadImageList">loadImageList</a></li><li><a href="global.html#loadSoundData">loadSoundData</a></li><li><a href="global.html#loadSpriteSheet">loadSpriteSheet</a></li><li><a href="global.html#loadUnityAtlas">loadUnityAtlas</a></li><li><a href="global.html#modifyValue">modifyValue</a></li><li><a href="global.html#moveButtonContainerDown">moveButtonContainerDown</a></li><li><a href="global.html#moveButtonContainerUp">moveButtonContainerUp</a></li><li><a href="global.html#parseAnimationData">parseAnimationData</a></li><li><a href="global.html#playAnimation">playAnimation</a></li><li><a href="global.html#playAnimationPromise">playAnimationPromise</a></li><li><a href="global.html#playBGM">playBGM</a></li><li><a href="global.html#playTweenPromise">playTweenPromise</a></li><li><a href="global.html#reset">reset</a></li><li><a href="global.html#resetAfterDieFail">resetAfterDieFail</a></li><li><a href="global.html#resetBGM">resetBGM</a></li><li><a href="global.html#resetHP">resetHP</a></li><li><a href="global.html#resetValue">resetValue</a></li><li><a href="global.html#rollDieAnimation">rollDieAnimation</a></li><li><a href="global.html#setMaximumValue">setMaximumValue</a></li><li><a href="global.html#setStageZIndex">setStageZIndex</a></li><li><a href="global.html#setTimedSound">setTimedSound</a></li><li><a href="global.html#setValue">setValue</a></li><li><a href="global.html#setVisible">setVisible</a></li><li><a href="global.html#stopBGM">stopBGM</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.5</a> on Sun Aug 30 2020 21:40:42 GMT+0100 (British Summer Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

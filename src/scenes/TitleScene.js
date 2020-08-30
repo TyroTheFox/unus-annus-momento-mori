@@ -1,31 +1,45 @@
 import Stage from "../engine/Stage";
 import MenuPanel from '../ui/MenuPanel';
 
+/**
+ * The Opening Title Screen
+ * @class TitleScene
+ * @extends {Phaser.Scene}
+ */
 class TitleScene extends Phaser.Scene {
-    constructor(test) {
-        super({
+    /**
+     * @constructor
+     */
+    constructor() {
+        super( {
             key: 'TitleScene'
-        });
+        } );
 
+        /** @type {Stage} */
         this._titleBackdrop = null;
 
+        /** @type {boolean} */
         this._playingBackgroundMusic = false;
     }
 
+    /**
+     * Creates all objects needed for the scene
+     */
     create() {
         this._titleBackdrop = new Stage( this, 'Spiral', 'spiral' );
 
         this.scene.bringToTop();
 
         this.registry.set('restartScene', false);
-        // this.registry.set('attractMode', true);
 
         let sh = this.game.config.height;
         let sw = this.game.config.width;
 
+        /** @type {Phaser.GameObjects.Sprite} */
         this._gameLogo = this.add.sprite( sw * 0.5, sh * 0.3, 'titleLogo' );
         this._gameLogo.setScale( 2 );
 
+        /** @type {MenuPanel} */
         this._mainMenu = new MenuPanel(
             this,
             'button_Idle',
@@ -67,6 +81,11 @@ class TitleScene extends Phaser.Scene {
         );
     }
 
+    /**
+     * Update the scene every tick
+     * @param {number} time
+     * @param {number} delta
+     */
     update(time, delta) {
         if (this.registry.get('restartScene')) {
             this.restartScene();
@@ -78,10 +97,16 @@ class TitleScene extends Phaser.Scene {
         }
     }
 
+    /**
+     * Starts the game and moves to the main menu
+     */
     startGame() {
         this.scene.start('MenuScene');
     }
 
+    /**
+     * Restarts the scene
+     */
     restartScene() {
         this.scene.stop('FightScene');
         this.scene.launch('FightScene');

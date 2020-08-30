@@ -1,0 +1,13 @@
+[
+    {
+        "name": "basic",
+        "action": "attack",
+        "config": {
+            "speed": 500,
+            "lifespan": 500
+        },
+        "duration": 200,
+        "frame": 15,
+        "target": "enemy"
+    }
+]

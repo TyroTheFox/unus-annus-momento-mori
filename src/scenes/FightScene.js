@@ -1,12 +1,41 @@
 import Character from "../engine/Character";
-import * as characterData from '../../assets/characterManifest.json';
 import Stage from "../engine/Stage";
 import HealthBar from "../ui/HealthBar";
 import Button from '../ui/Button';
 import MenuPanel from '../ui/MenuPanel';
 import DieSprite from '../ui/DieSprite';
 
+/**
+ * @typedef {Object} FightScene#PlayerComponents
+ * @property {string} characterName - Display name for character
+ * @property {Character} character - Character object
+ * @property {HealthBar} healthBar - Health Bar object
+ * @property {CharacterDataLoader#CharacterManifestEntry} data - Character data
+ */
+
+/**
+ * @typedef {Object} FightScene#PlayerCharacterData
+ * @property {string} name - Display name of the character
+ * @property {string} folderName - Folder name of the character where the character's assets are
+ * @property {?Character#CharacterConfig} config - Configuration data for the character
+ */
+
+/**
+ * @typedef {Object} FightScene#InitialiseData
+ * @property {FightScene#PlayerCharacterData} player1 - PLayer 1 Data
+ * @property {FightScene#PlayerCharacterData} player2 - PLayer 2 Data
+ * @property {Stage#StageManifestData} stage - Stage data
+ */
+
+/**
+ * Scene where Fights happen
+ * @class FightScene
+ * @extends Phaser.Scene
+ */
 class FightScene extends Phaser.Scene {
+    /**
+     * @constructor
+     */
     constructor() {
         super({
             key: 'FightScene'
@@ -15,6 +44,7 @@ class FightScene extends Phaser.Scene {
         this._stage = null;
         this._stageData = null;
 
+        /** @type {FightScene#PlayerComponents} */
         this._player1 = {
             characterName: null,
             character: null,
@@ -22,6 +52,7 @@ class FightScene extends Phaser.Scene {
             data: null
         };
 
+        /** @type {FightScene#PlayerComponents} */
         this._player2 = {
             characterName: null,
             character: null,
@@ -53,6 +84,10 @@ class FightScene extends Phaser.Scene {
         this._buttonLock = false;
     }
 
+    /**
+     * Initialise the Scene with given data
+     * @param {FightScene#InitialiseData} data - Data used to initialise the scene
+     */
     init( data ) {
         this._player1.characterName = data.player1.name;
         this._player1.data = data.player1;
@@ -60,6 +95,7 @@ class FightScene extends Phaser.Scene {
         this._player2.characterName = data.player2.name;
         this._player2.data = data.player2;
 
+        /** @type {Stage#StageManifestData} */
         this._stageData = data.stage;
 
         if ( this._optionsData ) {
@@ -75,20 +111,22 @@ class FightScene extends Phaser.Scene {
         }
     }
 
-    preload() {
-        // this.load.scenePlugin('animatedTiles', AnimatedTiles, 'animatedTiles', 'animatedTiles');
-    }
-
     create() {
         let sh = this.game.config.height;
         let sw = this.game.config.width;
 
+        /**
+         * @type {GameOptions}
+         * @private
+         */
         this._optionsData = this.registry.get( '__GameOptionsData' );
         this._damagePower = this._optionsData.damage;
         this._critDamage = this._optionsData.crit;
 
+        /** @type {Stage} */
         this._stage = this._getStageObject( this._stageData );
 
+        /** @type {DieSprite} */
         this._die1 = new DieSprite(
             this, 'dieSprite',
             ( sw * 0.5 ) - 200, sh * 0.9,
@@ -125,6 +163,8 @@ class FightScene extends Phaser.Scene {
                 }
             }
         );
+
+        /** @type {DieSprite} */
         this._die2 = new DieSprite(
             this,'dieSprite',
             ( sw * 0.5 ) + 200, sh * 0.9,
@@ -162,6 +202,7 @@ class FightScene extends Phaser.Scene {
             }
         );
 
+        /** @type {Stage#PlayerPositionData} */
         const playerPostions = this._stage.playerPositions;
 
         this._player1.character = this._getCharacterObject( this._player1.data );
@@ -237,6 +278,7 @@ class FightScene extends Phaser.Scene {
             }
         );
 
+        /** @type {Button} */
         this._attackButton = new Button(this, 'button_Idle', sw / 2, sh * 0.9, {
             scale: {
                 x: 8,
@@ -256,6 +298,7 @@ class FightScene extends Phaser.Scene {
             }
         } );
 
+        /** @type {MenuPanel} */
         this._fightMenu = new MenuPanel(
             this,
             'button_Idle',
@@ -338,10 +381,18 @@ class FightScene extends Phaser.Scene {
         this._player1.character.playAnimation( 'idle' );
         this._player2.character.playAnimation( 'idle' );
 
+        /** @type {Phaser.Input.Keyboard.Key} */
         this._pauseKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
+
+        /** @type {Phaser.Input.Keyboard.Key} */
         this._attackKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
     }
 
+    /**
+     * Update the scene every tick
+     * @param {number} time
+     * @param {number} delta
+     */
     update(time, delta) {
         if ( !this._playingBackgroundMusic ) {
             this._stage.playBGM();
@@ -380,18 +431,41 @@ class FightScene extends Phaser.Scene {
         }
     }
 
+    /**
+     *
+     * @param characterData
+     * @returns {Character}
+     * @private
+     */
     _getCharacterObject( characterData ) {
         return new Character( this, 100, 100, characterData.name, characterData.folderName, characterData.config || null );
     }
 
+    /**
+     * Generate a Stage Object based on data
+     * @param {Stage#StageManifestData} stageData
+     * @returns {Stage}
+     * @private
+     */
     _getStageObject( stageData ) {
         return new Stage( this, stageData.name, stageData.folderName );
     }
 
+    /**
+     * Simulates a die roll being made
+     * @param {number} sides - Number of sides the die has
+     * @returns {number}
+     * @private
+     */
     _makeDieRoll( sides ) {
         return Math.floor((Math.random() * sides) + 1);
     }
 
+    /**
+     * Plays out a round of the fight
+     * @returns {Promise<void>}
+     * @private
+     */
     async _playTurn() {
 
         await this._die1.resetAfterDieFail();
@@ -467,6 +541,10 @@ class FightScene extends Phaser.Scene {
         }
     }
 
+    /**
+     * Resets the scene for once a game has concluded
+     * @private
+     */
     _reset() {
         this._stage.resetBGM();
 

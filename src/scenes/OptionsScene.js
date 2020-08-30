@@ -2,15 +2,27 @@ import MenuPanel from '../ui/MenuPanel';
 import Stage from '../engine/Stage';
 import Button from '../ui/Button';
 
+/**
+ * Scene for altering the game's options
+ * @class OptionsScene
+ * @extends {Phaser.Scene}
+ */
 class OptionsScene extends Phaser.Scene {
+    /**
+     * @constructor
+     */
     constructor() {
         super({
             key: 'OptionsScene'
         });
 
+        /** @type {GameOptions} */
         this._optionsKey = '__GameOptionsData';
+
+        /** @type {DefaultOptions} */
         this._optionsDefaultKey = '__GameOptionsDefaultData';
 
+        /** @type {Phaser.GameObjects.TextStyle} */
         this._textStyle = {
             fontSize: '50px',
             fontFamily: 'Poppins',
@@ -19,22 +31,26 @@ class OptionsScene extends Phaser.Scene {
         }
     }
 
+    /**
+     * Initialises the object
+     */
     init() {
         this._optionsData = this.registry.get( this._optionsKey );
     }
 
-    preload() {
-
-    }
-
+    /**
+     * Creates all game objects
+     */
     create() {
         this._optionsData = this.registry.get( this._optionsKey );
+
         let sh = this.game.config.height;
         let sw = this.game.config.width;
 
         this._titleBackdrop = new Stage( this, 'Spiral', 'spiral' );
 
         // BACK BUTTON
+        /** @type {Button} */
         this._backButton = new Button(
             this,
             'button_Idle',
@@ -68,6 +84,7 @@ class OptionsScene extends Phaser.Scene {
         this._backButton.text.setDepth( 11 );
 
         // MAIN MENU
+        /** @type {MenuPanel} */
         this._mainMenu = new MenuPanel(
             this,
             'button_Idle',
@@ -137,6 +154,7 @@ class OptionsScene extends Phaser.Scene {
             }
         );
 
+        /** @type {Button} */
         this._hp = this._mainMenu.addButton(
             {
                 scale: {
@@ -163,6 +181,7 @@ class OptionsScene extends Phaser.Scene {
             }
         );
 
+        /** @type {Button} */
         this._damage = this._mainMenu.addButton(
             {
                 scale: {
@@ -193,6 +212,7 @@ class OptionsScene extends Phaser.Scene {
             }
         );
 
+        /** @type {Button} */
         this._crit = this._mainMenu.addButton(
             {
                 scale: {
@@ -251,9 +271,6 @@ class OptionsScene extends Phaser.Scene {
             }
         );
         // MAIN MENU
-    }
-
-    update( time, delta ) {
     }
 }
 

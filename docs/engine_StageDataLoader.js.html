@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: engine/StageDataLoader.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: engine/StageDataLoader.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import * as stageManifestData from '../../assets/backgroundManifest.json';
+
+/**
+ * Loads all assets relating to stages
+ * @class StageDataLoader
+ */
+export default class StageDataLoader {
+    /**
+     * @constructor
+     * @param {Phaser.Scene} scene - Game Context to load into
+     */
+    constructor( scene ) {
+        this._sourceDirectory = 'assets/backgrounds';
+        this._scene = scene;
+
+        /** @type {Array.&lt;Stage#StageManifestData>} */
+        this._stageManifestData = stageManifestData.default;
+    }
+
+    /**
+     * Load all manifest and json data needed to construct stages
+     */
+    getAllStageData() {
+        this._stageManifestData.forEach( ( stage ) => {
+            const { folderName, components } = stage;
+
+            if ( !folderName ) {
+                throw 'Folder name is missing'
+            }
+
+            components.forEach( ( componentData ) => {
+                const { importMethod, frames, spritesheetConfig } = componentData;
+
+                if ( !importMethod ){
+                    throw 'Import Method not stated'
+                }
+
+                switch ( importMethod ) {
+                    case 'image':
+                        this.loadImageComponent( folderName, componentData );
+                        break;
+                    case 'atlas':
+                        this.loadAtlas( folderName, componentData );
+                        break;
+                    case 'frames':
+                        if ( frames ) {
+                            this.loadImageList( folderName, componentData, frames );
+                        } else {
+                            throw 'Frame data not given'
+                        }
+                        break;
+                    case 'unity':
+                        this.loadUnityAtlas( folderName, componentData );
+                        break;
+                    case 'spritesheet':
+                        if ( spritesheetConfig ) {
+                            this.loadSpriteSheet( folderName, componentData, spritesheetConfig );
+                        } else {
+                            throw 'Spritesheet config data not given'
+                        }
+                        break;
+                }
+
+                if ( componentData.animated ) {
+                    this.loadAnimationData( folderName, componentData );
+                }
+            } );
+        } );
+    }
+
+    /**
+     * Turn all loaded data into asset objects
+     */
+    createAllStages() {
+        this._stageManifestData.forEach( ( stage ) => {
+            const { folderName, components } = stage;
+
+            components.forEach( ( componentData ) => {
+                if ( componentData.animated ) {
+                    this.parseAnimationData( folderName, componentData );
+                }
+            } );
+        } );
+    }
+
+    /**
+     * Loads a sprite atlas using it's data file
+     * @param {string} folderName - Name of the data folder for the character
+     * @param {Stage#Component} componentData - Data relating to the created component
+     */
+    loadAtlas( folderName, componentData ) {
+        this._scene.load.atlas(
+            `${componentData.name}_${folderName}`,
+            `../../${this._sourceDirectory}/${folderName}/${componentData.name}/spritesheet.png`,
+            `../../${this._sourceDirectory}/${folderName}/${componentData.name}/atlas.json`);
+    }
+
+    /**
+     * Loads json animation data
+     * @param {string} folderName - Name of the data folder for the character
+     * @param {Stage#Component} componentData - Data relating to the created component
+     */
+    loadAnimationData( folderName, componentData ) {
+        this._scene.load.json(`animation_${componentData.name}_${folderName}`, `../../${this._sourceDirectory}/${folderName}/${componentData.name}/animation.json`);
+    }
+
+    /**
+     * Loads a list of frame images
+     * @param {string} folderName - Name of the data folder for the character
+     * @param {Stage#Component} componentData - Data relating to the created component
+     * @param {Object.&lt;string, string>} imageList - A list of keys and paths to frame images
+     */
+    loadImageList( folderName, componentData, imageList ) {
+        let i = 0;
+        for ( const [key, path] of Object.entries( imageList ) ) {
+            if ( !path &amp;&amp; !key ) {
+                throw 'Data wrong or missing for frame ' + i;
+            }
+
+            if ( !path ){
+                throw 'Path not given for ' + key
+            }
+
+            if ( !key ) {
+                throw 'Key not given for ' + path
+            }
+            this._scene.load.image(`${key}-${componentData.name}_${folderName}`, `${this._sourceDirectory}/${folderName}/${componentData.name}/sprite.png`);
+            i++;
+        }
+    }
+
+    /**
+     * Loads an image component
+     * @param {string} folderName - Name of the data folder for the character
+     * @param {Stage#Component} componentData - Data relating to the created component
+     */
+    loadImageComponent( folderName, componentData ) {
+        this._scene.load.image(`${componentData.name}_${folderName}`, `${this._sourceDirectory}/${folderName}/${componentData.name}/sprite.png`);
+    }
+
+    /**
+     * Loads a Unity Sprite Atlas
+     * @param {string} folderName - Name of the data folder for the character
+     * @param {Stage#Component} componentData - Data relating to the created component
+     */
+    loadUnityAtlas( folderName, componentData ) {
+        this._scene.load.unityAtlas(
+            `${componentData.name}_${folderName}`,
+            `../../${this._sourceDirectory}/${folderName}/spritesheet.png`,
+            `../../${this._sourceDirectory}/${folderName}/atlas.meta`);
+    }
+
+    /**
+     * Loads a spritesheet using a given config file
+     * @param {string} folderName - Name of the data folder for the character
+     * @param {Stage#Component} componentData - Data relating to the created component
+     * @param {Phaser.Types.Loader.FileTypes.ImageFrameConfig} spritesheetConfig - Config for the spritesheet
+     */
+    loadSpriteSheet( folderName, componentData, spritesheetConfig ) {
+        this._scene.load.spritesheet(
+            `${componentData.name}_${folderName}`,
+            `../../${this._sourceDirectory}/${folderName}/spritesheet.png`,
+            spritesheetConfig
+        );
+    }
+
+    /**
+     * Parses Animation Data and turns it into sprite animations
+     * @param {string} folderName - Name of the data folder for the character
+     * @param {Stage#Component} componentData - Data relating to the created component
+     */
+    parseAnimationData( folderName, componentData ) {
+        const animationData = this._scene.cache.json.get( `animation_${componentData.name}_${folderName}` );
+
+        if (animationData) {
+            const { animData, frameData } = animationData;
+
+            if ( frameData ) {
+                animData.frames = this._scene.anims.generateFrameNames( `${componentData.name}_${folderName}`, animationData.frameData );
+            } else if ( animData.frames ) {
+                animData.frames.forEach( ( frame ) => {
+                    frame.key = `${frame.key}-${componentData.name}_${folderName}`;
+                } );
+            } else {
+                throw 'Frames data missing from ' + `${componentData.name}_${folderName}`;
+            }
+
+            animData.key = `${componentData.name}_${folderName}`;
+            this._scene.anims.create( animData );
+        }
+    }
+}
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="BootScene.html">BootScene</a></li><li><a href="Button.html">Button</a></li><li><a href="Character.html">Character</a></li><li><a href="CharacterDataLoader.html">CharacterDataLoader</a></li><li><a href="DieSprite.html">DieSprite</a></li><li><a href="FightScene.html">FightScene</a></li><li><a href="HealthBar.html">HealthBar</a></li><li><a href="MenuPanel.html">MenuPanel</a></li><li><a href="MenuScene.html">MenuScene</a></li><li><a href="module.exports_module.exports.html">exports</a></li><li><a href="OptionsScene.html">OptionsScene</a></li><li><a href="Stage.html">Stage</a></li><li><a href="StageDataLoader.html">StageDataLoader</a></li><li><a href="TitleScene.html">TitleScene</a></li></ul><h3>Global</h3><ul><li><a href="global.html#addButton">addButton</a></li><li><a href="global.html#addDamage">addDamage</a></li><li><a href="global.html#addMenuControlButton">addMenuControlButton</a></li><li><a href="global.html#buttonCount">buttonCount</a></li><li><a href="global.html#cleanUp">cleanUp</a></li><li><a href="global.html#config">config</a></li><li><a href="global.html#createAllCharacters">createAllCharacters</a></li><li><a href="global.html#createAllStages">createAllStages</a></li><li><a href="global.html#dieFailAnimation">dieFailAnimation</a></li><li><a href="global.html#enterButtonActiveState">enterButtonActiveState</a></li><li><a href="global.html#enterButtonHoverState">enterButtonHoverState</a></li><li><a href="global.html#enterButtonRestState">enterButtonRestState</a></li><li><a href="global.html#game">game</a></li><li><a href="global.html#getAllCharacterData">getAllCharacterData</a></li><li><a href="global.html#getAllStageData">getAllStageData</a></li><li><a href="global.html#HP">HP</a></li><li><a href="global.html#loadAnimationData">loadAnimationData</a></li><li><a href="global.html#loadAtlas">loadAtlas</a></li><li><a href="global.html#loadEmitterData">loadEmitterData</a></li><li><a href="global.html#loadImage">loadImage</a></li><li><a href="global.html#loadImageComponent">loadImageComponent</a></li><li><a href="global.html#loadImageList">loadImageList</a></li><li><a href="global.html#loadSoundData">loadSoundData</a></li><li><a href="global.html#loadSpriteSheet">loadSpriteSheet</a></li><li><a href="global.html#loadUnityAtlas">loadUnityAtlas</a></li><li><a href="global.html#modifyValue">modifyValue</a></li><li><a href="global.html#moveButtonContainerDown">moveButtonContainerDown</a></li><li><a href="global.html#moveButtonContainerUp">moveButtonContainerUp</a></li><li><a href="global.html#parseAnimationData">parseAnimationData</a></li><li><a href="global.html#playAnimation">playAnimation</a></li><li><a href="global.html#playAnimationPromise">playAnimationPromise</a></li><li><a href="global.html#playBGM">playBGM</a></li><li><a href="global.html#playTweenPromise">playTweenPromise</a></li><li><a href="global.html#reset">reset</a></li><li><a href="global.html#resetAfterDieFail">resetAfterDieFail</a></li><li><a href="global.html#resetBGM">resetBGM</a></li><li><a href="global.html#resetHP">resetHP</a></li><li><a href="global.html#resetValue">resetValue</a></li><li><a href="global.html#rollDieAnimation">rollDieAnimation</a></li><li><a href="global.html#setMaximumValue">setMaximumValue</a></li><li><a href="global.html#setStageZIndex">setStageZIndex</a></li><li><a href="global.html#setTimedSound">setTimedSound</a></li><li><a href="global.html#setValue">setValue</a></li><li><a href="global.html#setVisible">setVisible</a></li><li><a href="global.html#stopBGM">stopBGM</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.5</a> on Sun Aug 30 2020 21:40:42 GMT+0100 (British Summer Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
